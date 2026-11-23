@@ -1,261 +1,432 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#ffffff">
   <title>Учёт движения блоков</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg: #f4f6f9;
-      --card: #ffffff;
-      --text: #18202c;
-      --muted: #5c687a;
-      --border: #dce2ea;
-      --accent: #1d5fd6;
-      --accent-hover: #174eb5;
-      --accent-soft: #eaf1ff;
-      --danger: #c62828;
-      --danger-bg: #fdecec;
-      --warn: #9a5b00;
-      --warn-bg: #fff5e0;
-      --ok: #1b6b3a;
-      --ok-bg: #e7f6ed;
-      --info-bg: #eef3ff;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.4;
-    }
-    header {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 16px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
-    .brand { font-weight: 700; font-size: 16px; }
-    .user-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; }
-    .badge {
-      padding: 3px 8px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 600;
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-    .badge.viewer { background: #eef1f5; color: var(--muted); }
-    main { max-width: 1440px; margin: 0 auto; padding: 14px; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 14px;
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --primary: #1e40af;
+      --primary-light: #eff6ff;
+      --primary-border: #bfdbfe;
+      --entity-bg: #f5f3ff;
+      --entity-border: #ddd6fe;
+      --entity-accent: #7c3aed;
+      --entity-text: #4c1d95;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent-amber: #b45309;
+      --accent-amber-bg: #fffbeb;
+      --accent-amber-border: #fde68a;
+      --ok-bg: #ecfdf5;
+      --ok-text: #047857;
+      --err-bg: #fef2f2;
+      --err-text: #dc2626;
+      --radius: 14px;
     }
 
-    /* Форма авторизации по центру */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      overscroll-behavior: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.45;
+      padding-bottom: 40px;
+    }
+
+    /* Экран авторизации как в Базе отказов */
     .auth-screen {
-      min-height: calc(100vh - 96px);
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
-    }
-    .auth-panel {
-      width: 100%;
-      max-width: 360px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 20px;
-      box-shadow: 0 4px 18px rgba(24, 32, 44, 0.05);
-    }
-    .auth-heading {
-      margin: 0 0 18px 0;
-      font-size: 18px;
-      font-weight: 700;
-      text-align: center;
-      color: var(--text);
-    }
-    .auth-panel input {
-      width: 100%;
-      min-height: 40px;
-      margin-bottom: 12px;
-      padding: 9px 12px;
-    }
-    .auth-panel button[type="submit"] {
-      width: 100%;
-      min-height: 40px;
-      margin-top: 2px;
+      padding: 20px;
     }
 
-    .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    input, select, button, textarea {
-      font: inherit;
-      padding: 8px 10px;
+    .auth-card {
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      background: #fff;
-      color: var(--text);
+      border-radius: 18px;
+      padding: 28px 22px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
     }
-    input[type="text"], input[type="email"], input[type="password"], select { min-height: 36px; }
-    input:focus, select:focus, textarea:focus {
+
+    .auth-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .auth-sub {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .auth-error {
+      background: var(--err-bg);
+      color: var(--err-text);
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .form-group { margin-bottom: 14px; }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
       outline: none;
-      border-color: var(--accent);
+      background: #ffffff;
+      color: var(--text-main);
     }
-    button {
+
+    .form-control:focus { border-color: var(--primary); }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 13px 16px;
+      border-radius: 12px;
+      font-size: 15.5px;
+      font-weight: 700;
       cursor: pointer;
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
+    }
+
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Шапка основного приложения */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px 8px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .app-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .role-badge {
+      font-size: 11px;
       font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background: var(--primary-light);
+      color: var(--primary);
     }
-    button:hover { background: var(--accent-hover); }
-    button.secondary {
-      background: #fff;
-      color: var(--text);
-      border-color: var(--border);
+
+    .role-badge.readonly {
+      background: #f1f5f9;
+      color: var(--text-muted);
     }
-    button.secondary:hover { background: #f8fafc; }
-    button.small { padding: 5px 8px; font-size: 12px; min-height: 30px; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .logout-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
 
     .tabs {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
+      padding: 4px 16px 10px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .stats-bar {
+      padding: 10px 16px 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .live-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      margin-right: 5px;
+    }
+
+    .container {
+      padding: 8px 16px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
       margin-bottom: 12px;
     }
-    .tab-btn {
-      background: var(--card);
-      color: var(--text);
+
+    .input-sm {
+      padding: 8px 11px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      background: #ffffff;
+      color: var(--text-main);
+    }
+
+    .btn-sm {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 13px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-sm.secondary {
+      background: var(--bg);
+      color: var(--text-main);
       border: 1px solid var(--border);
     }
-    .tab-btn.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
+
+    .btn-sm.danger {
+      background: var(--err-bg);
+      color: var(--err-text);
+      border: 1px solid #fecaca;
     }
 
     .table-wrap {
       overflow-x: auto;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      background: #fff;
+      border-radius: 12px;
+      background: #ffffff;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 13px;
     }
+
     th, td {
       border-bottom: 1px solid var(--border);
-      border-right: 1px solid #edf0f5;
+      border-right: 1px solid #f1f5f9;
       padding: 7px 9px;
       text-align: left;
-      vertical-align: top;
       white-space: nowrap;
     }
+
     th {
       background: #f8fafc;
-      font-weight: 600;
+      font-weight: 700;
       position: sticky;
       top: 0;
-      z-index: 5;
+      z-index: 4;
     }
+
     tr.sys-row td {
-      background: #eef3fb;
+      background: var(--primary-light);
+      color: var(--primary);
       font-weight: 700;
-      color: #13294b;
     }
 
-    .flag-faulty, .val-bad { background: var(--danger-bg) !important; color: var(--danger); font-weight: 600; }
-    .flag-questionable, .val-q { background: var(--warn-bg) !important; color: var(--warn); font-weight: 600; }
-    .flag-go_pnk_2ae { background: #e8e0ff !important; color: #4725a6; font-weight: 600; }
-    .flag-tech { background: var(--info-bg) !important; color: #1b4b9b; font-weight: 600; }
-    .flag-form_8 { background: var(--ok-bg) !important; color: var(--ok); font-weight: 600; }
-    .dup-warn { outline: 2px solid var(--danger); }
+    .cell-input {
+      width: 96px;
+      padding: 4px 6px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 13px;
+      background: transparent;
+      color: inherit;
+    }
 
-    .muted { color: var(--muted); font-size: 12px; }
-    .status-msg { font-size: 13px; margin-top: 10px; text-align: center; color: var(--danger); }
-    .status-msg.ok { color: var(--ok); }
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+    .flag-faulty { background: var(--err-bg) !important; color: var(--err-text); font-weight: 700; }
+    .flag-questionable { background: var(--accent-amber-bg) !important; color: var(--accent-amber); font-weight: 700; }
+    .flag-go_pnk_2ae { background: var(--entity-bg) !important; color: var(--entity-text); font-weight: 700; }
+    .flag-tech { background: var(--primary-light) !important; color: var(--primary); font-weight: 700; }
+    .flag-form_8 { background: var(--ok-bg) !important; color: var(--ok-text); font-weight: 700; }
+    .dup-warn { outline: 2px solid var(--err-text); outline-offset: -2px; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .muted { color: var(--text-muted); font-size: 12px; }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
-  <header>
-    <div class="brand">Учёт движения блоков</div>
-    <div class="user-bar" id="userBar">
-      <span class="muted">Требуется вход</span>
+
+  <!-- Форма авторизации как в Базе отказов -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-title">Учёт движения блоков</div>
+      <div class="auth-sub">Доступ только для авторизованных пользователей</div>
+      <div id="authError" class="auth-error"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="loginEmail" class="form-control" required placeholder="user@example.com" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Пароль</label>
+          <input type="password" id="loginPassword" class="form-control" required placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button type="submit" id="loginBtn" class="btn-primary">Войти</button>
+      </form>
     </div>
-  </header>
+  </div>
 
-  <main>
-    <!-- Форма авторизации -->
-    <section class="auth-screen" id="authCard">
-      <div class="auth-panel">
-        <div class="auth-heading">Учёт движения блоков</div>
-        <form id="loginForm">
-          <input type="email" id="loginEmail" placeholder="Email" required autocomplete="username" />
-          <input type="password" id="loginPassword" placeholder="Пароль" required autocomplete="current-password" />
-          <button type="submit" id="loginBtn">Войти</button>
-        </form>
-        <div class="status-msg" id="authStatus"></div>
+  <!-- Основное приложение -->
+  <div id="mainApp" style="display: none;">
+    <div class="header">
+      <div class="top-bar">
+        <div class="app-title">Учёт движения блоков</div>
+        <div class="top-actions">
+          <div id="roleBadge" class="role-badge">Загрузка...</div>
+          <button id="logoutBtn" class="logout-btn">Выйти</button>
+        </div>
       </div>
-    </section>
-
-    <!-- Основной интерфейс -->
-    <section id="appSection" class="hidden">
-      <div class="tabs">
+      <div class="tabs" id="tabsContainer">
         <button class="tab-btn active" data-tab="aircrafts">Состав по бортам</button>
         <button class="tab-btn" data-tab="locations">Места и статусы</button>
-        <button class="tab-btn" data-tab="search">Поиск по зав. № и пометки</button>
+        <button class="tab-btn" data-tab="search">Поиск зав. № и пометки</button>
         <button class="tab-btn" data-tab="passports">Паспорта и даты</button>
         <button class="tab-btn" data-tab="faults">Отказы и история</button>
       </div>
+    </div>
 
+    <div class="stats-bar">
+      <span id="statsLabel">Загрузка данных...</span>
+      <span><span class="live-dot"></span><span id="userLabel"></span></span>
+    </div>
+
+    <div class="container">
       <!-- 1. Состав по бортам -->
-      <div class="card tab-panel" id="tab-aircrafts">
-        <div class="row" style="margin-bottom:10px; justify-content:space-between;">
-          <div class="row">
-            <input type="text" id="filterBoard" placeholder="Фильтр по борту..." />
-            <input type="text" id="filterBlock" placeholder="Фильтр по блоку/системе..." />
-            <button id="reloadAircraftsBtn" class="secondary">Обновить</button>
-          </div>
-          <div class="row editor-only">
-            <input type="text" id="newBoardNumber" placeholder="Новый борт" style="width:130px;" />
-            <button id="addBoardBtn">+ Борт</button>
-          </div>
+      <section class="card tab-section" id="sec-aircrafts">
+        <div class="toolbar">
+          <input type="text" id="filterBoard" class="input-sm" placeholder="Фильтр по борту">
+          <input type="text" id="filterBlock" class="input-sm" placeholder="Фильтр по блоку/системе">
+          <button type="button" id="refreshAircraftsBtn" class="btn-sm secondary">Обновить</button>
+          <span class="editor-only" style="display:inline-flex; gap:6px; margin-left:auto;">
+            <input type="text" id="newBoardInput" class="input-sm" placeholder="Новый борт" style="width:130px;">
+            <button type="button" id="addBoardBtn" class="btn-sm">+ Борт</button>
+          </span>
         </div>
         <div class="table-wrap">
           <table id="aircraftMatrixTable"></table>
         </div>
-        <div class="status-msg" id="aircraftsStatus"></div>
-      </div>
+      </section>
 
       <!-- 2. Места и статусы -->
-      <div class="card tab-panel hidden" id="tab-locations">
-        <div class="row" style="margin-bottom:10px;">
-          <select id="locationSelect"></select>
-          <button id="reloadLocationsBtn" class="secondary">Обновить</button>
+      <section class="card tab-section hidden" id="sec-locations">
+        <div class="toolbar">
+          <select id="locationSelect" class="input-sm"></select>
+          <button type="button" id="refreshLocationsBtn" class="btn-sm secondary">Обновить</button>
         </div>
-        <div class="row editor-only" style="margin-bottom:12px;">
-          <select id="locBlockSelect"></select>
-          <input type="text" id="locValueInput" placeholder="Зав. № или статус (неиспр, б/н, ?)" />
-          <input type="text" id="locNoteInput" placeholder="Примечание" />
-          <button id="addLocItemBtn">Добавить запись</button>
+        <div class="toolbar editor-only">
+          <select id="locBlockSelect" class="input-sm"></select>
+          <input type="text" id="locValueInput" class="input-sm" placeholder="Зав. № или статус (неиспр, б/н, ?)">
+          <input type="text" id="locNoteInput" class="input-sm" placeholder="Примечание">
+          <button type="button" id="addLocItemBtn" class="btn-sm">Добавить</button>
         </div>
         <div class="table-wrap">
           <table id="locationsTable">
@@ -265,47 +436,46 @@
                 <th>Значение / Зав. №</th>
                 <th>Примечание</th>
                 <th>Кто обновил</th>
-                <th>Действия</th>
+                <th>Действие</th>
               </tr>
             </thead>
             <tbody></tbody>
           </table>
         </div>
-      </div>
+      </section>
 
-      <!-- 3. Поиск по заводскому номеру, пометки и комментарии -->
-      <div class="card tab-panel hidden" id="tab-search">
-        <div class="row" style="margin-bottom:12px;">
-          <input type="text" id="serialSearchInput" placeholder="Введите заводской номер..." style="min-width:240px;" />
-          <button id="serialSearchBtn">Найти</button>
-          <button id="serialClearBtn" class="secondary">Сбросить</button>
+      <!-- 3. Поиск зав. №, пометки и комментарии -->
+      <section class="card tab-section hidden" id="sec-search">
+        <div class="toolbar">
+          <input type="text" id="serialSearchInput" class="input-sm" placeholder="Поиск по заводскому номеру..." style="min-width:240px;">
+          <button type="button" id="clearSerialBtn" class="btn-sm secondary">Сбросить</button>
         </div>
 
-        <div class="grid-2" style="margin-bottom:12px;">
-          <div class="card" style="margin:0;">
-            <h4 style="margin:0 0 8px 0;">Цветовая пометка по зав. №</h4>
-            <div class="row editor-only">
-              <select id="flagBlockSelect"></select>
-              <input type="text" id="flagSerialInput" placeholder="Зав. №" style="width:130px;" />
-              <select id="flagTypeSelect">
+        <div class="grid-2">
+          <div class="card editor-only" style="margin:0;">
+            <div class="form-label">Цветовая пометка по зав. №</div>
+            <div class="toolbar" style="margin-bottom:0;">
+              <select id="flagBlockSelect" class="input-sm"></select>
+              <input type="text" id="flagSerialInput" class="input-sm" placeholder="Зав. №" style="width:120px;">
+              <select id="flagTypeSelect" class="input-sm">
                 <option value="faulty">Неисправный блок</option>
                 <option value="questionable">Исправность под ?</option>
                 <option value="go_pnk_2ae">ГО ПНК 2 АЭ</option>
                 <option value="tech">ТЭЧ</option>
                 <option value="form_8">ФОРМА 8</option>
               </select>
-              <input type="text" id="flagNoteInput" placeholder="Примечание" />
-              <button id="saveFlagBtn">Сохранить пометку</button>
+              <input type="text" id="flagNoteInput" class="input-sm" placeholder="Примечание">
+              <button type="button" id="saveFlagBtn" class="btn-sm">Сохранить</button>
             </div>
           </div>
 
-          <div class="card" style="margin:0;">
-            <h4 style="margin:0 0 8px 0;">Комментарий к заводскому номеру</h4>
-            <div class="row editor-only">
-              <select id="commentBlockSelect"></select>
-              <input type="text" id="commentSerialInput" placeholder="Зав. №" style="width:130px;" />
-              <input type="text" id="commentTextInput" placeholder="Текст комментария" style="flex:1;" />
-              <button id="saveCommentBtn">Добавить</button>
+          <div class="card editor-only" style="margin:0;">
+            <div class="form-label">Комментарий к заводскому номеру</div>
+            <div class="toolbar" style="margin-bottom:0;">
+              <select id="commentBlockSelect" class="input-sm"></select>
+              <input type="text" id="commentSerialInput" class="input-sm" placeholder="Зав. №" style="width:120px;">
+              <input type="text" id="commentTextInput" class="input-sm" placeholder="Текст комментария" style="flex:1;">
+              <button type="button" id="saveCommentBtn" class="btn-sm">Добавить</button>
             </div>
           </div>
         </div>
@@ -339,18 +509,18 @@
             <tbody></tbody>
           </table>
         </div>
-      </div>
+      </section>
 
-      <!-- 4. Паспорта систем и блоков -->
-      <div class="card tab-panel hidden" id="tab-passports">
-        <div class="row editor-only" style="margin-bottom:12px;">
-          <select id="passBlockSelect"></select>
-          <select id="passAircraftSelect"><option value="">— Борт (необязательно) —</option></select>
-          <input type="text" id="passSerialInput" placeholder="Родной зав. № блока" style="width:150px;" />
-          <input type="text" id="passMfgInput" placeholder="Дата выпуска" style="width:130px;" />
-          <input type="text" id="passRepairInput" placeholder="Крайний ремонт" style="width:140px;" />
-          <input type="text" id="passNotesInput" placeholder="Примечание" />
-          <button id="savePassportBtn">Сохранить паспорт</button>
+      <!-- 4. Паспорта и даты -->
+      <section class="card tab-section hidden" id="sec-passports">
+        <div class="toolbar editor-only">
+          <select id="passBlockSelect" class="input-sm"></select>
+          <select id="passAircraftSelect" class="input-sm"><option value="">— Борт —</option></select>
+          <input type="text" id="passSerialInput" class="input-sm" placeholder="Родной зав. №" style="width:140px;">
+          <input type="text" id="passMfgInput" class="input-sm" placeholder="Дата выпуска" style="width:130px;">
+          <input type="text" id="passRepairInput" class="input-sm" placeholder="Крайний ремонт" style="width:140px;">
+          <input type="text" id="passNotesInput" class="input-sm" placeholder="Примечание">
+          <button type="button" id="savePassportBtn" class="btn-sm">Сохранить</button>
         </div>
         <div class="table-wrap">
           <table id="passportsTable">
@@ -367,20 +537,20 @@
             <tbody></tbody>
           </table>
         </div>
-      </div>
+      </section>
 
-      <!-- 5. Журнал отказов и история изменений -->
-      <div class="card tab-panel hidden" id="tab-faults">
-        <h4 style="margin:0 0 8px 0;">Новый отказ</h4>
-        <div class="row editor-only" style="margin-bottom:12px;">
-          <input type="text" id="faultDateInput" placeholder="Дата (напр. 23.11.2026)" style="width:140px;" />
-          <select id="faultAircraftSelect"><option value="">— Борт —</option></select>
-          <select id="faultBlockSelect"><option value="">— Блок —</option></select>
-          <input type="text" id="faultSerialInput" placeholder="Зав. № отказавшего" style="width:150px;" />
-          <input type="text" id="faultSymptomInput" placeholder="Проявление отказа" style="min-width:180px;" />
-          <input type="text" id="faultRemedyInput" placeholder="Устранение" style="min-width:160px;" />
-          <input type="text" id="faultKunInput" placeholder="КУН" style="width:110px;" />
-          <button id="addFaultBtn">Записать отказ</button>
+      <!-- 5. Отказы и история -->
+      <section class="card tab-section hidden" id="sec-faults">
+        <div class="form-label">Новый отказ</div>
+        <div class="toolbar editor-only">
+          <input type="text" id="faultDateInput" class="input-sm" placeholder="Дата" style="width:120px;">
+          <select id="faultAircraftSelect" class="input-sm"><option value="">— Борт —</option></select>
+          <select id="faultBlockSelect" class="input-sm"><option value="">— Блок —</option></select>
+          <input type="text" id="faultSerialInput" class="input-sm" placeholder="Зав. №" style="width:120px;">
+          <input type="text" id="faultSymptomInput" class="input-sm" placeholder="Проявление">
+          <input type="text" id="faultRemedyInput" class="input-sm" placeholder="Устранение">
+          <input type="text" id="faultKunInput" class="input-sm" placeholder="КУН" style="width:100px;">
+          <button type="button" id="addFaultBtn" class="btn-sm">Записать</button>
         </div>
 
         <div class="table-wrap" style="margin-bottom:16px;">
@@ -400,14 +570,14 @@
           </table>
         </div>
 
-        <h4 style="margin:0 0 8px 0;">История изменений</h4>
+        <div class="form-label">История изменений</div>
         <div class="table-wrap">
           <table id="historyTable">
             <thead>
               <tr>
                 <th>Время</th>
                 <th>Пользователь</th>
-                <th>Раздел / Объект</th>
+                <th>Объект</th>
                 <th>Было</th>
                 <th>Стало</th>
               </tr>
@@ -415,36 +585,20 @@
             <tbody></tbody>
           </table>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
+    </div>
+  </div>
 
   <script>
     const SUPABASE_URL = 'https://mqpcarywowyubjjbesxx.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_iwmXxKD3q6UReOZ0PI84Vw_kLjtf8ON';
+    const SUPABASE_KEY = 'sb_publishable_iwmXxKD3q6UReOZ0PI84Vw_kLjtf8ON';
 
-    const $ = (id) => document.getElementById(id);
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    function setAuthStatus(text, isOk = false) {
-      const el = $('authStatus');
-      if (!el) return;
-      el.textContent = text || '';
-      el.className = isOk ? 'status-msg ok' : 'status-msg';
-    }
-
-    const sb = window.supabase
-      ? window.supabase.createClient(SUPABASE_URL.trim(), SUPABASE_ANON_KEY.trim())
-      : null;
-
-    if (!sb) {
-      setAuthStatus('Ошибка загрузки библиотеки Supabase. Проверьте подключение к интернету.');
-    }
-
-    let currentUser = null;
-    let currentRole = 'viewer';
-    let currentDisplayName = '';
-
-    let state = {
+    const STATE = {
+      user: null,
+      canEdit: false,
+      userName: '',
       systems: [],
       blocks: [],
       aircrafts: [],
@@ -458,88 +612,123 @@
       changeHistory: []
     };
 
-    function applyRoleUI() {
-      const isEditor = currentRole === 'editor';
-      document.querySelectorAll('.editor-only').forEach((node) => {
-        node.classList.toggle('hidden', !isEditor);
+    function showAuthError(msg) {
+      const box = document.getElementById('authError');
+      if (!msg) {
+        box.style.display = 'none';
+        box.textContent = '';
+        return;
+      }
+      box.textContent = msg;
+      box.style.display = 'block';
+    }
+
+    function showAuthScreen(errorMsg = '') {
+      document.getElementById('authScreen').style.display = 'flex';
+      document.getElementById('mainApp').style.display = 'none';
+      showAuthError(errorMsg);
+    }
+
+    function applyRolePermissions() {
+      const badge = document.getElementById('roleBadge');
+      if (STATE.canEdit) {
+        badge.textContent = 'Редактор';
+        badge.classList.remove('readonly');
+      } else {
+        badge.textContent = 'Только просмотр';
+        badge.classList.add('readonly');
+      }
+      document.querySelectorAll('.editor-only').forEach(el => {
+        el.classList.toggle('hidden', !STATE.canEdit);
       });
     }
 
-    function renderUserBar() {
-      const bar = $('userBar');
-      if (!currentUser) {
-        bar.innerHTML = `<span class="muted">Требуется вход</span>`;
-        return;
-      }
-      const label = currentDisplayName ? `${currentDisplayName} (${currentUser.email})` : currentUser.email;
-      bar.innerHTML = `
-        <span>${label}</span>
-        <span class="badge ${currentRole === 'editor' ? '' : 'viewer'}">${currentRole}</span>
-        <button class="small secondary" id="logoutBtn">Выйти</button>
-      `;
-      $('logoutBtn').addEventListener('click', async () => {
+    async function initAuthorizedApp(user) {
+      STATE.user = user;
+      const { data: roleRow, error: roleErr } = await sb
+        .from('user_roles')
+        .select('role, display_name')
+        .eq('email', user.email)
+        .maybeSingle();
+
+      if (roleErr) {
         await sb.auth.signOut();
-      });
-    }
-
-    async function handleSession(session) {
-      currentUser = session?.user || null;
-      if (!currentUser) {
-        currentRole = 'viewer';
-        currentDisplayName = '';
-        renderUserBar();
-        $('authCard').classList.remove('hidden');
-        $('appSection').classList.add('hidden');
-        return;
-      }
-
-      const { data: rows, error } = await sb.rpc('get_my_role');
-      const roleRow = Array.isArray(rows) ? rows[0] : rows;
-
-      if (error) {
-        setAuthStatus('Ошибка проверки прав в user_roles: ' + error.message);
-        $('authCard').classList.remove('hidden');
-        $('appSection').classList.add('hidden');
-        renderUserBar();
+        showAuthScreen('Ошибка проверки прав в user_roles: ' + roleErr.message);
         return;
       }
 
       if (!roleRow) {
-        setAuthStatus(`Email "${currentUser.email}" не найден в таблице user_roles.`);
-        $('authCard').classList.remove('hidden');
-        $('appSection').classList.add('hidden');
-        renderUserBar();
+        await sb.auth.signOut();
+        showAuthScreen('Вашему аккаунту не предоставлен доступ к этой базе.');
         return;
       }
 
-      currentRole = roleRow.role || 'viewer';
-      currentDisplayName = roleRow.display_name || '';
-      setAuthStatus('');
-      renderUserBar();
-      applyRoleUI();
-      $('authCard').classList.add('hidden');
-      $('appSection').classList.remove('hidden');
-      await loadAllData();
+      STATE.canEdit = roleRow.role === 'editor';
+      STATE.userName = (roleRow.display_name || '').trim() || user.email.split('@')[0];
+
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
+      document.getElementById('userLabel').textContent = `${STATE.userName} (${user.email})`;
+
+      applyRolePermissions();
+      await loadAllTables();
     }
 
-    async function logChange(tableName, targetLabel, oldValue, newValue) {
-      if (currentRole !== 'editor' || !currentUser) return;
+    async function checkSession() {
+      const { data } = await sb.auth.getSession();
+      if (data && data.session && data.session.user) {
+        await initAuthorizedApp(data.session.user);
+      } else {
+        showAuthScreen();
+      }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showAuthError('');
+      const btn = document.getElementById('loginBtn');
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      btn.disabled = true;
+      btn.textContent = 'Вход...';
+
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+
+      btn.disabled = false;
+      btn.textContent = 'Войти';
+
+      if (error) {
+        showAuthError('Ошибка: ' + error.message);
+        return;
+      }
+      if (data && data.user) {
+        await initAuthorizedApp(data.user);
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await sb.auth.signOut();
+      STATE.user = null;
+      showAuthScreen();
+    });
+
+    async function logChange(targetLabel, oldValue, newValue) {
+      if (!STATE.canEdit || !STATE.user) return;
       await sb.from('change_history').insert({
-        table_name: tableName,
         target_label: targetLabel,
         old_value: String(oldValue ?? ''),
         new_value: String(newValue ?? ''),
-        changed_by: currentDisplayName || currentUser.email
+        changed_by: STATE.userName || STATE.user.email
       });
     }
 
     function isDuplicateAllowed(block, serialValue) {
       const clean = (serialValue || '').trim().toUpperCase();
       if (!clean || ['+', '-', 'НЕИСПР', 'Б/Н', '?'].includes(clean)) return true;
-      if (block?.allow_duplicate_serial) return true;
-      const nameUp = (block?.name || '').toUpperCase();
-      if (nameUp.includes('2НВ-10') || nameUp.includes('КП7-17')) return true;
-      return false;
+      if (block && block.allow_duplicate_serial) return true;
+      const nameUp = (block && block.name ? block.name : '').toUpperCase();
+      return nameUp.includes('2НВ-10') || nameUp.includes('КП7-17');
     }
 
     function getFlagForSerial(blockId, val) {
@@ -549,17 +738,17 @@
       if (lower === 'неиспр') return 'faulty';
       if (clean === '?') return 'questionable';
 
-      const found = state.serialFlags.find(
-        (f) => f.serial_number.trim().toLowerCase() === lower && (!f.block_id || f.block_id === blockId)
+      const found = STATE.serialFlags.find(
+        f => f.serial_number.trim().toLowerCase() === lower && (!f.block_id || f.block_id === blockId)
       );
       return found ? found.flag_type : null;
     }
 
-    async function loadAllData() {
+    async function loadAllTables() {
       const [
-        systemsRes, blocksRes, aircraftsRes, abRes,
-        locsRes, locItemsRes, flagsRes, commentsRes,
-        passRes, faultsRes, histRes
+        sysRes, blkRes, acRes, abRes,
+        locRes, locItemRes, flagRes, commRes,
+        passRes, faultRes, histRes
       ] = await Promise.all([
         sb.from('systems').select('*').order('sort_order').order('id'),
         sb.from('blocks').select('*').order('sort_order').order('id'),
@@ -574,123 +763,114 @@
         sb.from('change_history').select('*').order('changed_at', { ascending: false }).limit(200)
       ]);
 
-      state.systems = systemsRes.data || [];
-      state.blocks = blocksRes.data || [];
-      state.aircrafts = aircraftsRes.data || [];
-      state.aircraftBlocks = abRes.data || [];
-      state.locations = (locsRes.data || []).filter((l) => l.name !== 'ГО ПНК 2 АЭ');
-      state.locationItems = locItemsRes.data || [];
-      state.serialFlags = flagsRes.data || [];
-      state.serialComments = commentsRes.data || [];
-      state.passportBlocks = passRes.data || [];
-      state.faultLogs = faultsRes.data || [];
-      state.changeHistory = histRes.data || [];
+      STATE.systems = sysRes.data || [];
+      STATE.blocks = blkRes.data || [];
+      STATE.aircrafts = acRes.data || [];
+      STATE.aircraftBlocks = abRes.data || [];
+      STATE.locations = (locRes.data || []).filter(l => l.name !== 'ГО ПНК 2 АЭ');
+      STATE.locationItems = locItemRes.data || [];
+      STATE.serialFlags = flagRes.data || [];
+      STATE.serialComments = commRes.data || [];
+      STATE.passportBlocks = passRes.data || [];
+      STATE.faultLogs = faultRes.data || [];
+      STATE.changeHistory = histRes.data || [];
+
+      document.getElementById('statsLabel').textContent =
+        `Бортов: ${STATE.aircrafts.length} • Блоков: ${STATE.blocks.length} • Мест: ${STATE.locations.length}`;
 
       populateSelects();
       renderAircraftMatrix();
-      renderLocationsTab();
-      renderSearchTab();
-      renderPassportsTab();
+      renderLocations();
+      renderSearch();
+      renderPassports();
       renderFaultsAndHistory();
     }
 
     function populateSelects() {
-      const blockOptions = state.blocks.map((b) => {
-        const sys = state.systems.find((s) => s.id === b.system_id);
+      const blockOpts = STATE.blocks.map(b => {
+        const sys = STATE.systems.find(s => s.id === b.system_id);
         return `<option value="${b.id}">${sys ? sys.name + ' — ' : ''}${b.name}</option>`;
       }).join('');
 
-      ['locBlockSelect', 'flagBlockSelect', 'commentBlockSelect', 'passBlockSelect'].forEach((id) => {
-        if ($(id)) $(id).innerHTML = blockOptions;
+      ['locBlockSelect', 'flagBlockSelect', 'commentBlockSelect', 'passBlockSelect'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = blockOpts;
       });
 
-      if ($('faultBlockSelect')) {
-        $('faultBlockSelect').innerHTML = `<option value="">— Блок —</option>` + blockOptions;
-      }
+      const faultBlk = document.getElementById('faultBlockSelect');
+      if (faultBlk) faultBlk.innerHTML = `<option value="">— Блок —</option>` + blockOpts;
 
-      const acOptions = `<option value="">— Борт —</option>` + state.aircrafts.map(
-        (a) => `<option value="${a.id}">${a.board_number}</option>`
+      const acOpts = `<option value="">— Борт —</option>` + STATE.aircrafts.map(
+        a => `<option value="${a.id}">${a.board_number}</option>`
       ).join('');
-      if ($('passAircraftSelect')) $('passAircraftSelect').innerHTML = acOptions;
-      if ($('faultAircraftSelect')) $('faultAircraftSelect').innerHTML = acOptions;
 
-      if ($('locationSelect')) {
-        const prevLoc = $('locationSelect').value;
-        $('locationSelect').innerHTML = state.locations.map(
-          (l) => `<option value="${l.id}">${l.name}</option>`
-        ).join('');
-        if (prevLoc && state.locations.some((l) => String(l.id) === prevLoc)) {
-          $('locationSelect').value = prevLoc;
+      const passAc = document.getElementById('passAircraftSelect');
+      if (passAc) passAc.innerHTML = acOpts;
+
+      const faultAc = document.getElementById('faultAircraftSelect');
+      if (faultAc) faultAc.innerHTML = acOpts;
+
+      const locSel = document.getElementById('locationSelect');
+      if (locSel) {
+        const prev = locSel.value;
+        locSel.innerHTML = STATE.locations.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+        if (prev && STATE.locations.some(l => String(l.id) === prev)) {
+          locSel.value = prev;
         }
       }
     }
 
     function renderAircraftMatrix() {
-      const fBoard = ($('filterBoard')?.value || '').trim().toLowerCase();
-      const fBlock = ($('filterBlock')?.value || '').trim().toLowerCase();
+      const fBoard = (document.getElementById('filterBoard').value || '').trim().toLowerCase();
+      const fBlock = (document.getElementById('filterBlock').value || '').trim().toLowerCase();
 
-      const boards = state.aircrafts.filter((a) => !fBoard || a.board_number.toLowerCase().includes(fBoard));
+      const boards = STATE.aircrafts.filter(a => !fBoard || a.board_number.toLowerCase().includes(fBoard));
 
-      const serialCounts = {};
-      state.aircraftBlocks.forEach((row) => {
+      const counts = {};
+      STATE.aircraftBlocks.forEach(row => {
         const clean = (row.value || '').trim().toLowerCase();
         if (!clean || ['+', '-', 'неиспр', 'б/н', '?'].includes(clean)) return;
         const key = `${row.block_id}::${clean}`;
-        serialCounts[key] = (serialCounts[key] || 0) + 1;
+        counts[key] = (counts[key] || 0) + 1;
       });
 
-      let thead = `<thead><tr><th>Система / Блок</th>${boards.map((a) => `<th>${a.board_number}</th>`).join('')}</tr></thead>`;
-      let tbody = '<tbody>';
+      let html = `<thead><tr><th>Система / Блок</th>${boards.map(a => `<th>${a.board_number}</th>`).join('')}</tr></thead><tbody>`;
 
-      state.systems.forEach((sys) => {
-        const sysBlocks = state.blocks.filter((b) => b.system_id === sys.id);
-        const filteredBlocks = sysBlocks.filter(
-          (b) => !fBlock || b.name.toLowerCase().includes(fBlock) || sys.name.toLowerCase().includes(fBlock)
+      STATE.systems.forEach(sys => {
+        const sysBlocks = STATE.blocks.filter(b => b.system_id === sys.id);
+        const visibleBlocks = sysBlocks.filter(
+          b => !fBlock || b.name.toLowerCase().includes(fBlock) || sys.name.toLowerCase().includes(fBlock)
         );
-        if (fBlock && filteredBlocks.length === 0) return;
+        if (fBlock && !visibleBlocks.length) return;
 
-        tbody += `<tr class="sys-row"><td colspan="${boards.length + 1}">${sys.name}</td></tr>`;
+        html += `<tr class="sys-row"><td colspan="${boards.length + 1}">${sys.name}</td></tr>`;
 
-        (fBlock ? filteredBlocks : sysBlocks).forEach((blk) => {
-          tbody += `<tr><td title="${blk.info_text || ''}">${blk.name}</td>`;
-          boards.forEach((ac) => {
-            const cellRows = state.aircraftBlocks.filter(
-              (r) => r.aircraft_id === ac.id && r.block_id === blk.id
-            );
-            const mainRow = cellRows[0] || { id: null, value: '', item_note: '' };
-            const val = mainRow.value || '';
+        (fBlock ? visibleBlocks : sysBlocks).forEach(blk => {
+          html += `<tr><td>${blk.name}</td>`;
+          boards.forEach(ac => {
+            const cell = STATE.aircraftBlocks.find(r => r.aircraft_id === ac.id && r.block_id === blk.id);
+            const val = cell ? (cell.value || '') : '';
             const flag = getFlagForSerial(blk.id, val);
             const clean = val.trim().toLowerCase();
-            const dupKey = `${blk.id}::${clean}`;
-            const isDup =
-              clean &&
-              !['+', '-', 'неиспр', 'б/н', '?'].includes(clean) &&
-              serialCounts[dupKey] > 1 &&
-              !isDuplicateAllowed(blk, val);
+            const isDup = clean && !['+', '-', 'неиспр', 'б/н', '?'].includes(clean) &&
+              counts[`${blk.id}::${clean}`] > 1 && !isDuplicateAllowed(blk, val);
 
-            const cls = [
-              flag ? `flag-${flag}` : '',
-              isDup ? 'dup-warn' : ''
-            ].filter(Boolean).join(' ');
+            const cls = [flag ? `flag-${flag}` : '', isDup ? 'dup-warn' : ''].filter(Boolean).join(' ');
 
-            if (currentRole === 'editor') {
-              tbody += `<td class="${cls}">
-                <input type="text" value="${val.replace(/"/g, '&quot;')}"
-                  data-ac="${ac.id}" data-blk="${blk.id}" data-row-id="${mainRow.id || ''}" data-orig="${val.replace(/"/g, '&quot;')}"
-                  class="ab-input" style="width:92px; padding:4px 6px; min-height:28px;" />
-              </td>`;
+            if (STATE.canEdit) {
+              html += `<td class="${cls}"><input type="text" class="cell-input ab-cell" value="${val.replace(/"/g, '&quot;')}" data-ac="${ac.id}" data-blk="${blk.id}" data-row="${cell ? cell.id : ''}" data-orig="${val.replace(/"/g, '&quot;')}"></td>`;
             } else {
-              tbody += `<td class="${cls}">${val || '—'}</td>`;
+              html += `<td class="${cls}">${val || '—'}</td>`;
             }
           });
-          tbody += `</tr>`;
+          html += `</tr>`;
         });
       });
 
-      tbody += '</tbody>';
-      $('aircraftMatrixTable').innerHTML = thead + tbody;
+      html += `</tbody>`;
+      document.getElementById('aircraftMatrixTable').innerHTML = html;
 
-      document.querySelectorAll('.ab-input').forEach((inp) => {
+      document.querySelectorAll('.ab-cell').forEach(inp => {
         inp.addEventListener('change', async (e) => {
           const el = e.target;
           const newVal = el.value.trim();
@@ -699,12 +879,12 @@
 
           const acId = Number(el.dataset.ac);
           const blkId = Number(el.dataset.blk);
-          const rowId = el.dataset.rowId ? Number(el.dataset.rowId) : null;
+          const rowId = el.dataset.row ? Number(el.dataset.row) : null;
 
           if (rowId) {
             await sb.from('aircraft_blocks').update({
               value: newVal,
-              updated_by: currentDisplayName || currentUser.email,
+              updated_by: STATE.userName,
               updated_at: new Date().toISOString()
             }).eq('id', rowId);
           } else if (newVal) {
@@ -713,26 +893,26 @@
               block_id: blkId,
               slot_index: 1,
               value: newVal,
-              updated_by: currentDisplayName || currentUser.email
+              updated_by: STATE.userName
             });
           }
 
-          const acName = state.aircrafts.find((a) => a.id === acId)?.board_number || acId;
-          const blkName = state.blocks.find((b) => b.id === blkId)?.name || blkId;
-          await logChange('aircraft_blocks', `${acName} / ${blkName}`, oldVal, newVal);
-          await loadAllData();
+          const acName = STATE.aircrafts.find(a => a.id === acId)?.board_number || acId;
+          const blkName = STATE.blocks.find(b => b.id === blkId)?.name || blkId;
+          await logChange(`${acName} / ${blkName}`, oldVal, newVal);
+          await loadAllTables();
         });
       });
     }
 
-    function renderLocationsTab() {
-      const locId = Number($('locationSelect')?.value);
-      const tbody = $('locationsTable').querySelector('tbody');
-      const items = state.locationItems.filter((i) => i.location_id === locId);
+    function renderLocations() {
+      const locId = Number(document.getElementById('locationSelect').value);
+      const tbody = document.getElementById('locationsTable').querySelector('tbody');
+      const items = STATE.locationItems.filter(i => i.location_id === locId);
 
-      tbody.innerHTML = items.map((item) => {
-        const blk = state.blocks.find((b) => b.id === item.block_id);
-        const sys = state.systems.find((s) => s.id === blk?.system_id);
+      tbody.innerHTML = items.map(item => {
+        const blk = STATE.blocks.find(b => b.id === item.block_id);
+        const sys = STATE.systems.find(s => s.id === blk?.system_id);
         const flag = getFlagForSerial(item.block_id, item.value);
         return `
           <tr>
@@ -740,30 +920,28 @@
             <td class="${flag ? 'flag-' + flag : ''}">${item.value}</td>
             <td>${item.item_note || ''}</td>
             <td class="muted">${item.updated_by || ''}</td>
-            <td>
-              ${currentRole === 'editor' ? `<button class="small secondary" onclick="deleteLocItem(${item.id})">Удалить</button>` : ''}
-            </td>
+            <td>${STATE.canEdit ? `<button type="button" class="btn-sm danger" onclick="deleteLocItem(${item.id})">Удалить</button>` : ''}</td>
           </tr>
         `;
       }).join('') || `<tr><td colspan="5" class="muted">Записей нет</td></tr>`;
     }
 
     window.deleteLocItem = async function(id) {
-      const item = state.locationItems.find((x) => x.id === id);
+      const item = STATE.locationItems.find(x => x.id === id);
       await sb.from('location_items').delete().eq('id', id);
-      await logChange('location_items', `Место #${item?.location_id} / ${item?.value || id}`, item?.value || '', '');
-      await loadAllData();
+      await logChange(`Место #${item?.location_id} / ${item?.value || id}`, item?.value || '', '');
+      await loadAllTables();
     };
 
-    function renderSearchTab() {
-      const q = ($('serialSearchInput')?.value || '').trim().toLowerCase();
+    function renderSearch() {
+      const q = (document.getElementById('serialSearchInput').value || '').trim().toLowerCase();
       const rows = [];
 
-      state.aircraftBlocks.forEach((r) => {
+      STATE.aircraftBlocks.forEach(r => {
         if (q && !(r.value || '').toLowerCase().includes(q)) return;
         if (!q && !(r.value || '').trim()) return;
-        const ac = state.aircrafts.find((a) => a.id === r.aircraft_id);
-        const blk = state.blocks.find((b) => b.id === r.block_id);
+        const ac = STATE.aircrafts.find(a => a.id === r.aircraft_id);
+        const blk = STATE.blocks.find(b => b.id === r.block_id);
         const flag = getFlagForSerial(r.block_id, r.value);
         rows.push({
           where: `Борт ${ac?.board_number || ''}`,
@@ -774,10 +952,10 @@
         });
       });
 
-      state.locationItems.forEach((r) => {
+      STATE.locationItems.forEach(r => {
         if (q && !(r.value || '').toLowerCase().includes(q)) return;
-        const loc = state.locations.find((l) => l.id === r.location_id);
-        const blk = state.blocks.find((b) => b.id === r.block_id);
+        const loc = STATE.locations.find(l => l.id === r.location_id);
+        const blk = STATE.blocks.find(b => b.id === r.block_id);
         const flag = getFlagForSerial(r.block_id, r.value);
         rows.push({
           where: loc?.name || 'Место',
@@ -788,204 +966,182 @@
         });
       });
 
-      $('searchResultsTable').querySelector('tbody').innerHTML = rows.slice(0, 150).map((row) => `
-        <tr>
-          <td>${row.where}</td>
-          <td>${row.block}</td>
-          <td class="${row.flag ? 'flag-' + row.flag : ''}">${row.val}</td>
-          <td>${row.flag}</td>
-          <td>${row.note}</td>
-        </tr>
-      `).join('') || `<tr><td colspan="5" class="muted">Совпадений не найдено</td></tr>`;
-
-      const filteredComments = state.serialComments.filter(
-        (c) => !q || (c.serial_number || '').toLowerCase().includes(q) || (c.comment_text || '').toLowerCase().includes(q)
-      );
-      $('commentsTable').querySelector('tbody').innerHTML = filteredComments.map((c) => {
-        const blk = state.blocks.find((b) => b.id === c.block_id);
-        return `
+      document.getElementById('searchResultsTable').querySelector('tbody').innerHTML =
+        rows.slice(0, 150).map(row => `
           <tr>
-            <td>${blk?.name || '—'}</td>
-            <td>${c.serial_number}</td>
-            <td>${c.comment_text}</td>
-            <td class="muted">${c.updated_by || ''}</td>
-            <td class="muted">${new Date(c.updated_at).toLocaleString('ru-RU')}</td>
+            <td>${row.where}</td>
+            <td>${row.block}</td>
+            <td class="${row.flag ? 'flag-' + row.flag : ''}">${row.val}</td>
+            <td>${row.flag}</td>
+            <td>${row.note}</td>
           </tr>
-        `;
-      }).join('') || `<tr><td colspan="5" class="muted">Комментариев нет</td></tr>`;
+        `).join('') || `<tr><td colspan="5" class="muted">Совпадений нет</td></tr>`;
+
+      const comms = STATE.serialComments.filter(
+        c => !q || (c.serial_number || '').toLowerCase().includes(q) || (c.comment_text || '').toLowerCase().includes(q)
+      );
+
+      document.getElementById('commentsTable').querySelector('tbody').innerHTML =
+        comms.map(c => {
+          const blk = STATE.blocks.find(b => b.id === c.block_id);
+          return `
+            <tr>
+              <td>${blk?.name || '—'}</td>
+              <td>${c.serial_number}</td>
+              <td>${c.comment_text}</td>
+              <td class="muted">${c.updated_by || ''}</td>
+              <td class="muted">${new Date(c.updated_at).toLocaleString('ru-RU')}</td>
+            </tr>
+          `;
+        }).join('') || `<tr><td colspan="5" class="muted">Комментариев нет</td></tr>`;
     }
 
-    function renderPassportsTab() {
-      $('passportsTable').querySelector('tbody').innerHTML = state.passportBlocks.map((p) => {
-        const blk = state.blocks.find((b) => b.id === p.block_id);
-        const sys = state.systems.find((s) => s.id === blk?.system_id);
-        const ac = state.aircrafts.find((a) => a.id === p.aircraft_id);
-        return `
-          <tr>
-            <td>${sys ? sys.name + ' — ' : ''}${blk?.name || ''}</td>
-            <td>${ac?.board_number || '—'}</td>
-            <td>${p.serial_number || ''}</td>
-            <td>${p.manufacture_date || ''}</td>
-            <td>${p.last_repair_date || ''}</td>
-            <td>${p.notes || ''}</td>
-          </tr>
-        `;
-      }).join('') || `<tr><td colspan="6" class="muted">Паспортов пока нет</td></tr>`;
+    function renderPassports() {
+      document.getElementById('passportsTable').querySelector('tbody').innerHTML =
+        STATE.passportBlocks.map(p => {
+          const blk = STATE.blocks.find(b => b.id === p.block_id);
+          const sys = STATE.systems.find(s => s.id === blk?.system_id);
+          const ac = STATE.aircrafts.find(a => a.id === p.aircraft_id);
+          return `
+            <tr>
+              <td>${sys ? sys.name + ' — ' : ''}${blk?.name || ''}</td>
+              <td>${ac?.board_number || '—'}</td>
+              <td>${p.serial_number || ''}</td>
+              <td>${p.manufacture_date || ''}</td>
+              <td>${p.last_repair_date || ''}</td>
+              <td>${p.notes || ''}</td>
+            </tr>
+          `;
+        }).join('') || `<tr><td colspan="6" class="muted">Паспортов нет</td></tr>`;
     }
 
     function renderFaultsAndHistory() {
-      $('faultsTable').querySelector('tbody').innerHTML = state.faultLogs.map((f) => {
-        const ac = state.aircrafts.find((a) => a.id === f.aircraft_id);
-        const blk = state.blocks.find((b) => b.id === f.block_id);
-        return `
-          <tr>
-            <td>${f.fault_date || ''}</td>
-            <td>${ac?.board_number || '—'}</td>
-            <td>${blk?.name || '—'}</td>
-            <td>${f.failed_serial || ''}</td>
-            <td>${f.symptom || ''}</td>
-            <td>${f.remedy || ''}</td>
-            <td>${f.kun || ''}</td>
-          </tr>
-        `;
-      }).join('') || `<tr><td colspan="7" class="muted">Записей об отказах нет</td></tr>`;
+      document.getElementById('faultsTable').querySelector('tbody').innerHTML =
+        STATE.faultLogs.map(f => {
+          const ac = STATE.aircrafts.find(a => a.id === f.aircraft_id);
+          const blk = STATE.blocks.find(b => b.id === f.block_id);
+          return `
+            <tr>
+              <td>${f.fault_date || ''}</td>
+              <td>${ac?.board_number || '—'}</td>
+              <td>${blk?.name || '—'}</td>
+              <td>${f.failed_serial || ''}</td>
+              <td>${f.symptom || ''}</td>
+              <td>${f.remedy || ''}</td>
+              <td>${f.kun || ''}</td>
+            </tr>
+          `;
+        }).join('') || `<tr><td colspan="7" class="muted">Отказов нет</td></tr>`;
 
-      $('historyTable').querySelector('tbody').innerHTML = state.changeHistory.map((h) => `
-        <tr>
-          <td class="muted">${new Date(h.changed_at).toLocaleString('ru-RU')}</td>
-          <td>${h.changed_by}</td>
-          <td>${h.target_label}</td>
-          <td>${h.old_value}</td>
-          <td>${h.new_value}</td>
-        </tr>
-      `).join('') || `<tr><td colspan="5" class="muted">История пуста</td></tr>`;
+      document.getElementById('historyTable').querySelector('tbody').innerHTML =
+        STATE.changeHistory.map(h => `
+          <tr>
+            <td class="muted">${new Date(h.changed_at).toLocaleString('ru-RU')}</td>
+            <td>${h.changed_by}</td>
+            <td>${h.target_label}</td>
+            <td>${h.old_value}</td>
+            <td>${h.new_value}</td>
+          </tr>
+        `).join('') || `<tr><td colspan="5" class="muted">История пуста</td></tr>`;
     }
 
-    $('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!sb) return;
-
-      const email = $('loginEmail').value.trim();
-      const password = $('loginPassword').value;
-
-      if (/[^\x20-\x7E]/.test(email)) {
-        setAuthStatus('В поле Email есть русские буквы или недопустимые символы.');
-        return;
-      }
-      if (/[^\x20-\x7E]/.test(password)) {
-        setAuthStatus('В поле Пароль есть русские буквы или недопустимые символы.');
-        return;
-      }
-
-      setAuthStatus('Выполняется вход...', true);
-      try {
-        const { error } = await sb.auth.signInWithPassword({ email, password });
-        if (error) {
-          setAuthStatus('Ошибка входа: ' + error.message);
-        }
-      } catch (err) {
-        setAuthStatus('Ошибка входа: ' + (err?.message || err));
-      }
-    });
-
-    document.querySelectorAll('.tab-btn').forEach((btn) => {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const tab = btn.dataset.tab;
-        document.querySelectorAll('.tab-panel').forEach((p) => {
-          p.classList.toggle('hidden', p.id !== `tab-${tab}`);
+        document.querySelectorAll('.tab-section').forEach(sec => {
+          sec.classList.toggle('hidden', sec.id !== `sec-${tab}`);
         });
       });
     });
 
-    $('filterBoard').addEventListener('input', renderAircraftMatrix);
-    $('filterBlock').addEventListener('input', renderAircraftMatrix);
-    $('reloadAircraftsBtn').addEventListener('click', loadAllData);
+    document.getElementById('filterBoard').addEventListener('input', renderAircraftMatrix);
+    document.getElementById('filterBlock').addEventListener('input', renderAircraftMatrix);
+    document.getElementById('refreshAircraftsBtn').addEventListener('click', loadAllTables);
 
-    $('addBoardBtn').addEventListener('click', async () => {
-      const num = $('newBoardNumber').value.trim();
+    document.getElementById('addBoardBtn').addEventListener('click', async () => {
+      const num = document.getElementById('newBoardInput').value.trim();
       if (!num) return;
       await sb.from('aircrafts').insert({ board_number: num });
-      await logChange('aircrafts', `Борт ${num}`, '', num);
-      $('newBoardNumber').value = '';
-      await loadAllData();
+      await logChange(`Борт ${num}`, '', num);
+      document.getElementById('newBoardInput').value = '';
+      await loadAllTables();
     });
 
-    $('locationSelect').addEventListener('change', renderLocationsTab);
-    $('reloadLocationsBtn').addEventListener('click', loadAllData);
+    document.getElementById('locationSelect').addEventListener('change', renderLocations);
+    document.getElementById('refreshLocationsBtn').addEventListener('click', loadAllTables);
 
-    $('addLocItemBtn').addEventListener('click', async () => {
-      const locId = Number($('locationSelect').value);
-      const blkId = Number($('locBlockSelect').value);
-      const val = $('locValueInput').value.trim();
-      const note = $('locNoteInput').value.trim();
+    document.getElementById('addLocItemBtn').addEventListener('click', async () => {
+      const locId = Number(document.getElementById('locationSelect').value);
+      const blkId = Number(document.getElementById('locBlockSelect').value);
+      const val = document.getElementById('locValueInput').value.trim();
+      const note = document.getElementById('locNoteInput').value.trim();
       if (!val) return;
       await sb.from('location_items').insert({
         location_id: locId,
         block_id: blkId,
         value: val,
         item_note: note,
-        updated_by: currentDisplayName || currentUser.email
+        updated_by: STATE.userName
       });
-      const locName = state.locations.find((l) => l.id === locId)?.name || locId;
-      await logChange('location_items', `${locName}`, '', val);
-      $('locValueInput').value = '';
-      $('locNoteInput').value = '';
-      await loadAllData();
+      const locName = STATE.locations.find(l => l.id === locId)?.name || locId;
+      await logChange(locName, '', val);
+      document.getElementById('locValueInput').value = '';
+      document.getElementById('locNoteInput').value = '';
+      await loadAllTables();
     });
 
-    $('serialSearchBtn').addEventListener('click', renderSearchTab);
-    $('serialSearchInput').addEventListener('input', renderSearchTab);
-    $('serialClearBtn').addEventListener('click', () => {
-      $('serialSearchInput').value = '';
-      renderSearchTab();
+    document.getElementById('serialSearchInput').addEventListener('input', renderSearch);
+    document.getElementById('clearSerialBtn').addEventListener('click', () => {
+      document.getElementById('serialSearchInput').value = '';
+      renderSearch();
     });
 
-    $('saveFlagBtn').addEventListener('click', async () => {
-      const blkId = Number($('flagBlockSelect').value) || null;
-      const serial = $('flagSerialInput').value.trim();
-      const flagType = $('flagTypeSelect').value;
-      const note = $('flagNoteInput').value.trim();
+    document.getElementById('saveFlagBtn').addEventListener('click', async () => {
+      const blkId = Number(document.getElementById('flagBlockSelect').value) || null;
+      const serial = document.getElementById('flagSerialInput').value.trim();
+      const flagType = document.getElementById('flagTypeSelect').value;
+      const note = document.getElementById('flagNoteInput').value.trim();
       if (!serial) return;
       await sb.from('serial_flags').upsert({
         block_id: blkId,
         serial_number: serial,
         flag_type: flagType,
         note,
-        updated_by: currentDisplayName || currentUser.email,
+        updated_by: STATE.userName,
         updated_at: new Date().toISOString()
       }, { onConflict: 'block_id,serial_number,flag_type' });
-      await logChange('serial_flags', `Пометка ${serial}`, '', flagType);
-      $('flagSerialInput').value = '';
-      $('flagNoteInput').value = '';
-      await loadAllData();
+      await logChange(`Пометка ${serial}`, '', flagType);
+      document.getElementById('flagSerialInput').value = '';
+      document.getElementById('flagNoteInput').value = '';
+      await loadAllTables();
     });
 
-    $('saveCommentBtn').addEventListener('click', async () => {
-      const blkId = Number($('commentBlockSelect').value) || null;
-      const serial = $('commentSerialInput').value.trim();
-      const text = $('commentTextInput').value.trim();
+    document.getElementById('saveCommentBtn').addEventListener('click', async () => {
+      const blkId = Number(document.getElementById('commentBlockSelect').value) || null;
+      const serial = document.getElementById('commentSerialInput').value.trim();
+      const text = document.getElementById('commentTextInput').value.trim();
       if (!serial || !text) return;
       await sb.from('serial_comments').insert({
         block_id: blkId,
         serial_number: serial,
         comment_text: text,
-        updated_by: currentDisplayName || currentUser.email
+        updated_by: STATE.userName
       });
-      await logChange('serial_comments', `Комментарий зав. № ${serial}`, '', text);
-      $('commentSerialInput').value = '';
-      $('commentTextInput').value = '';
-      await loadAllData();
+      await logChange(`Комментарий ${serial}`, '', text);
+      document.getElementById('commentSerialInput').value = '';
+      document.getElementById('commentTextInput').value = '';
+      await loadAllTables();
     });
 
-    $('savePassportBtn').addEventListener('click', async () => {
-      const blkId = Number($('passBlockSelect').value);
-      const acId = $('passAircraftSelect').value ? Number($('passAircraftSelect').value) : null;
-      const serial = $('passSerialInput').value.trim();
-      const mfg = $('passMfgInput').value.trim();
-      const rep = $('passRepairInput').value.trim();
-      const notes = $('passNotesInput').value.trim();
+    document.getElementById('savePassportBtn').addEventListener('click', async () => {
+      const blkId = Number(document.getElementById('passBlockSelect').value);
+      const acId = document.getElementById('passAircraftSelect').value ? Number(document.getElementById('passAircraftSelect').value) : null;
+      const serial = document.getElementById('passSerialInput').value.trim();
+      const mfg = document.getElementById('passMfgInput').value.trim();
+      const rep = document.getElementById('passRepairInput').value.trim();
+      const notes = document.getElementById('passNotesInput').value.trim();
       await sb.from('passport_blocks').insert({
         block_id: blkId,
         aircraft_id: acId,
@@ -994,22 +1150,22 @@
         last_repair_date: rep,
         notes
       });
-      await logChange('passport_blocks', `Паспорт зав. № ${serial || blkId}`, '', `${mfg} / ${rep}`);
-      $('passSerialInput').value = '';
-      $('passMfgInput').value = '';
-      $('passRepairInput').value = '';
-      $('passNotesInput').value = '';
-      await loadAllData();
+      await logChange(`Паспорт ${serial || blkId}`, '', `${mfg} / ${rep}`);
+      document.getElementById('passSerialInput').value = '';
+      document.getElementById('passMfgInput').value = '';
+      document.getElementById('passRepairInput').value = '';
+      document.getElementById('passNotesInput').value = '';
+      await loadAllTables();
     });
 
-    $('addFaultBtn').addEventListener('click', async () => {
-      const faultDate = $('faultDateInput').value.trim();
-      const acId = $('faultAircraftSelect').value ? Number($('faultAircraftSelect').value) : null;
-      const blkId = $('faultBlockSelect').value ? Number($('faultBlockSelect').value) : null;
-      const serial = $('faultSerialInput').value.trim();
-      const symptom = $('faultSymptomInput').value.trim();
-      const remedy = $('faultRemedyInput').value.trim();
-      const kun = $('faultKunInput').value.trim();
+    document.getElementById('addFaultBtn').addEventListener('click', async () => {
+      const faultDate = document.getElementById('faultDateInput').value.trim();
+      const acId = document.getElementById('faultAircraftSelect').value ? Number(document.getElementById('faultAircraftSelect').value) : null;
+      const blkId = document.getElementById('faultBlockSelect').value ? Number(document.getElementById('faultBlockSelect').value) : null;
+      const serial = document.getElementById('faultSerialInput').value.trim();
+      const symptom = document.getElementById('faultSymptomInput').value.trim();
+      const remedy = document.getElementById('faultRemedyInput').value.trim();
+      const kun = document.getElementById('faultKunInput').value.trim();
       if (!symptom && !serial) return;
       await sb.from('fault_logs').insert({
         fault_date: faultDate,
@@ -1019,22 +1175,17 @@
         symptom,
         remedy,
         kun,
-        created_by: currentDisplayName || currentUser.email
+        created_by: STATE.userName
       });
-      await logChange('fault_logs', `Отказ зав. № ${serial || ''}`, '', symptom);
-      $('faultSerialInput').value = '';
-      $('faultSymptomInput').value = '';
-      $('faultRemedyInput').value = '';
-      $('faultKunInput').value = '';
-      await loadAllData();
+      await logChange(`Отказ ${serial || ''}`, '', symptom);
+      document.getElementById('faultSerialInput').value = '';
+      document.getElementById('faultSymptomInput').value = '';
+      document.getElementById('faultRemedyInput').value = '';
+      document.getElementById('faultKunInput').value = '';
+      await loadAllTables();
     });
 
-    if (sb) {
-      sb.auth.onAuthStateChange(async (_event, session) => {
-        await handleSession(session);
-      });
-      sb.auth.getSession().then(({ data: { session } }) => handleSession(session));
-    }
+    checkSession();
   </script>
 </body>
 </html>
