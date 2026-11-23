@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Учёт движения блоков</title>
+  <title>Учёт движения блоков ПНК</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -160,7 +160,7 @@
 </head>
 <body>
   <header>
-    <div class="brand">Учёт блоков и оборудования</div>
+    <div class="brand">Учёт движения блоков ПНК</div>
     <div class="user-bar" id="userBar">
       <span class="muted">Требуется вход</span>
     </div>
@@ -387,7 +387,7 @@
   <script>
     // <--- ВСТАВЬТЕ СЮДА ВАШИ ДАННЫЕ ИЗ SUPABASE (Project Settings -> API) --->
     const SUPABASE_URL = 'https://mqpcarywowyubjjbesxx.supabase.co';
-    const SUPABASE_ANON_KEY = 'Вsb_publishable_iwmXxKD3q6UReOZ0PI84Vw_kLjtf8ON';
+    const SUPABASE_ANON_KEY = 'sb_publishable_iwmXxKD3q6UReOZ0PI84Vw_kLjtf8ON';
 
     const $ = (id) => document.getElementById(id);
 
@@ -398,15 +398,23 @@
       el.className = isOk ? 'status-msg ok' : 'status-msg';
     }
 
-    if (!window.supabase) {
-      setAuthStatus('Ошибка загрузки библиотеки Supabase. Проверьте подключение к интернету.');
-    } else if (SUPABASE_URL.includes('ВАШ_ПРОЕКТ') || SUPABASE_ANON_KEY.includes('ВАШ_ANON')) {
-      setAuthStatus('Впишите SUPABASE_URL и SUPABASE_ANON_KEY в код файла index.html.');
+    function hasNonAsciiOrControl(str) {
+      return /[^\x20-\x7E]/.test(str || '');
     }
 
-    const sb = window.supabase
-      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-      : null;
+    const cleanUrl = (SUPABASE_URL || '').trim();
+    const cleanKey = (SUPABASE_ANON_KEY || '').trim();
+
+    let sb = null;
+    if (!window.supabase) {
+      setAuthStatus('Ошибка загрузки библиотеки Supabase. Проверьте подключение к интернету.');
+    } else if (!cleanUrl || cleanUrl.includes('ВАШ_ПРОЕКТ') || !cleanKey || cleanKey.includes('ВАШ_ANON')) {
+      setAuthStatus('Впишите SUPABASE_URL и SUPABASE_ANON_KEY в код файла index.html.');
+    } else if (hasNonAsciiOrControl(cleanUrl) || hasNonAsciiOrControl(cleanKey)) {
+      setAuthStatus('В SUPABASE_URL или SUPABASE_ANON_KEY попали недопустимые символы (например, кириллица, пробелы или тире). Скопируйте ключ заново.');
+    } else {
+      sb = window.supabase.createClient(cleanUrl, cleanKey);
+    }
 
     let currentUser = null;
     let currentRole = 'viewer';
@@ -833,12 +841,16 @@
       e.preventDefault();
       if (!sb) return;
       setAuthStatus('Выполняется вход...', true);
-      const { error } = await sb.auth.signInWithPassword({
-        email: $('loginEmail').value.trim(),
-        password: $('loginPassword').value
-      });
-      if (error) {
-        setAuthStatus('Ошибка входа: ' + error.message);
+      try {
+        const { error } = await sb.auth.signInWithPassword({
+          email: $('loginEmail').value.trim(),
+          password: $('loginPassword').value
+        });
+        if (error) {
+          setAuthStatus('Ошибка входа: ' + error.message);
+        }
+      } catch (err) {
+        setAuthStatus('Ошибка входа: ' + (err?.message || err));
       }
     });
 
@@ -850,8 +862,12 @@
         return;
       }
       setAuthStatus('Отправка ссылки...', true);
-      const { error } = await sb.auth.signInWithOtp({ email });
-      setAuthStatus(error ? 'Ошибка: ' + error.message : 'Ссылка для входа отправлена на почту.', !error);
+      try {
+        const { error } = await sb.auth.signInWithOtp({ email });
+        setAuthStatus(error ? 'Ошибка: ' + error.message : 'Ссылка для входа отправлена на почту.', !error);
+      } catch (err) {
+        setAuthStatus('Ошибка: ' + (err?.message || err));
+      }
     });
 
     document.querySelectorAll('.tab-btn').forEach((btn) => {
