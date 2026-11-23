@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Учёт движения блоков ПНК</title>
+  <title>Учёт движения блоков</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -65,6 +65,12 @@
     .auth-box {
       max-width: 420px;
       margin: 40px auto;
+    }
+    .auth-title {
+      margin: 0 0 12px 0;
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
     }
     .auth-box input {
       width: 100%;
@@ -160,7 +166,7 @@
 </head>
 <body>
   <header>
-    <div class="brand">Учёт движения блоков ПНК</div>
+    <div class="brand">Учёт движения блоков</div>
     <div class="user-bar" id="userBar">
       <span class="muted">Требуется вход</span>
     </div>
@@ -169,14 +175,11 @@
   <main>
     <!-- Форма входа -->
     <section class="card auth-box" id="authCard">
-      <h3 style="margin:0 0 12px 0;">Вход в систему</h3>
+      <div class="auth-title">Учёт движения блоков</div>
       <form id="loginForm">
         <input type="email" id="loginEmail" placeholder="Email" required autocomplete="username" />
         <input type="password" id="loginPassword" placeholder="Пароль" required autocomplete="current-password" />
-        <div class="row">
-          <button type="submit" id="loginBtn" style="flex:1;">Войти</button>
-          <button type="button" id="magicLinkBtn" class="secondary">Ссылка на почту</button>
-        </div>
+        <button type="submit" id="loginBtn" style="width:100%;">Войти</button>
       </form>
       <div class="status-msg" id="authStatus"></div>
     </section>
@@ -385,7 +388,6 @@
   </main>
 
   <script>
-    // <--- ВСТАВЬТЕ СЮДА ВАШИ ДАННЫЕ ИЗ SUPABASE (Project Settings -> API) --->
     const SUPABASE_URL = 'https://mqpcarywowyubjjbesxx.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_iwmXxKD3q6UReOZ0PI84Vw_kLjtf8ON';
 
@@ -398,22 +400,12 @@
       el.className = isOk ? 'status-msg ok' : 'status-msg';
     }
 
-    function hasNonAsciiOrControl(str) {
-      return /[^\x20-\x7E]/.test(str || '');
-    }
+    const sb = window.supabase
+      ? window.supabase.createClient(SUPABASE_URL.trim(), SUPABASE_ANON_KEY.trim())
+      : null;
 
-    const cleanUrl = (SUPABASE_URL || '').trim();
-    const cleanKey = (SUPABASE_ANON_KEY || '').trim();
-
-    let sb = null;
-    if (!window.supabase) {
+    if (!sb) {
       setAuthStatus('Ошибка загрузки библиотеки Supabase. Проверьте подключение к интернету.');
-    } else if (!cleanUrl || cleanUrl.includes('ВАШ_ПРОЕКТ') || !cleanKey || cleanKey.includes('ВАШ_ANON')) {
-      setAuthStatus('Впишите SUPABASE_URL и SUPABASE_ANON_KEY в код файла index.html.');
-    } else if (hasNonAsciiOrControl(cleanUrl) || hasNonAsciiOrControl(cleanKey)) {
-      setAuthStatus('В SUPABASE_URL или SUPABASE_ANON_KEY попали недопустимые символы (например, кириллица, пробелы или тире). Скопируйте ключ заново.');
-    } else {
-      sb = window.supabase.createClient(cleanUrl, cleanKey);
     }
 
     let currentUser = null;
@@ -836,37 +828,31 @@
       `).join('') || `<tr><td colspan="5" class="muted">История пуста</td></tr>`;
     }
 
-    // Вход
+    // Вход по email и паролю
     $('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!sb) return;
+
+      const email = $('loginEmail').value.trim();
+      const password = $('loginPassword').value;
+
+      if (/[^\x20-\x7E]/.test(email)) {
+        setAuthStatus('В поле Email есть русские буквы или недопустимые символы. Переключите раскладку на английскую.');
+        return;
+      }
+      if (/[^\x20-\x7E]/.test(password)) {
+        setAuthStatus('В поле Пароль есть русские буквы или недопустимые символы. Переключите раскладку на английскую.');
+        return;
+      }
+
       setAuthStatus('Выполняется вход...', true);
       try {
-        const { error } = await sb.auth.signInWithPassword({
-          email: $('loginEmail').value.trim(),
-          password: $('loginPassword').value
-        });
+        const { error } = await sb.auth.signInWithPassword({ email, password });
         if (error) {
           setAuthStatus('Ошибка входа: ' + error.message);
         }
       } catch (err) {
         setAuthStatus('Ошибка входа: ' + (err?.message || err));
-      }
-    });
-
-    $('magicLinkBtn').addEventListener('click', async () => {
-      if (!sb) return;
-      const email = $('loginEmail').value.trim();
-      if (!email) {
-        setAuthStatus('Введите Email.');
-        return;
-      }
-      setAuthStatus('Отправка ссылки...', true);
-      try {
-        const { error } = await sb.auth.signInWithOtp({ email });
-        setAuthStatus(error ? 'Ошибка: ' + error.message : 'Ссылка для входа отправлена на почту.', !error);
-      } catch (err) {
-        setAuthStatus('Ошибка: ' + (err?.message || err));
       }
     });
 
