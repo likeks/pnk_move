@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Учёт блоков и оборудования</title>
+  <title>Учёт движения блоков</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -61,6 +61,14 @@
       border-radius: 10px;
       padding: 14px;
       margin-bottom: 14px;
+    }
+    .auth-box {
+      max-width: 420px;
+      margin: 40px auto;
+    }
+    .auth-box input {
+      width: 100%;
+      margin-bottom: 10px;
     }
     .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
     input, select, button, textarea {
@@ -136,7 +144,6 @@
       color: #13294b;
     }
 
-    /* Цветовые пометки серийных номеров / статусов */
     .flag-faulty, .val-bad { background: var(--danger-bg) !important; color: var(--danger); font-weight: 600; }
     .flag-questionable, .val-q { background: var(--warn-bg) !important; color: var(--warn); font-weight: 600; }
     .flag-go_pnk_2ae { background: #e8e0ff !important; color: #4725a6; font-weight: 600; }
@@ -145,7 +152,8 @@
     .dup-warn { outline: 2px solid var(--danger); }
 
     .muted { color: var(--muted); font-size: 12px; }
-    .status-msg { font-size: 13px; margin-top: 6px; color: var(--muted); }
+    .status-msg { font-size: 13px; margin-top: 8px; color: var(--danger); }
+    .status-msg.ok { color: var(--ok); }
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
     .hidden { display: none !important; }
   </style>
@@ -154,31 +162,22 @@
   <header>
     <div class="brand">Учёт блоков и оборудования</div>
     <div class="user-bar" id="userBar">
-      <span class="muted">Не выполнено подключение</span>
+      <span class="muted">Требуется вход</span>
     </div>
   </header>
 
   <main>
-    <!-- Настройка подключения Supabase (сохраняется локально в браузере) -->
-    <section class="card" id="configCard">
-      <h3 style="margin:0 0 8px 0;">Подключение к Supabase</h3>
-      <div class="row">
-        <input type="text" id="sbUrl" placeholder="Project URL (https://xxxx.supabase.co)" style="min-width: 260px; flex:1;" />
-        <input type="text" id="sbKey" placeholder="anon public key" style="min-width: 260px; flex:1;" />
-        <button id="saveConfigBtn">Сохранить и подключить</button>
-      </div>
-      <div class="status-msg" id="configStatus"></div>
-    </section>
-
-    <!-- Вход пользователя -->
-    <section class="card hidden" id="authCard">
-      <h3 style="margin:0 0 8px 0;">Вход в систему</h3>
-      <div class="row">
-        <input type="email" id="loginEmail" placeholder="Email" />
-        <input type="password" id="loginPassword" placeholder="Пароль" />
-        <button id="loginBtn">Войти</button>
-        <button id="magicLinkBtn" class="secondary">Ссылка на почту</button>
-      </div>
+    <!-- Форма входа -->
+    <section class="card auth-box" id="authCard">
+      <h3 style="margin:0 0 12px 0;">Вход в систему</h3>
+      <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Email" required autocomplete="username" />
+        <input type="password" id="loginPassword" placeholder="Пароль" required autocomplete="current-password" />
+        <div class="row">
+          <button type="submit" id="loginBtn" style="flex:1;">Войти</button>
+          <button type="button" id="magicLinkBtn" class="secondary">Ссылка на почту</button>
+        </div>
+      </form>
       <div class="status-msg" id="authStatus"></div>
     </section>
 
@@ -211,7 +210,7 @@
         <div class="status-msg" id="aircraftsStatus"></div>
       </div>
 
-      <!-- 2. Места и статусы (без ГО ПНК 2 АЭ) -->
+      <!-- 2. Места и статусы -->
       <div class="card tab-panel hidden" id="tab-locations">
         <div class="row" style="margin-bottom:10px;">
           <select id="locationSelect"></select>
@@ -386,10 +385,29 @@
   </main>
 
   <script>
-    const LS_URL = 'https://xbyrflflvghnjksrqlau.supabase.co';
-    const LS_KEY = 'sb_publishable_I3XFt32zsrO94A1Xc9HiMg_VaBQ7IqY';
+    // <--- ВСТАВЬТЕ СЮДА ВАШИ ДАННЫЕ ИЗ SUPABASE (Project Settings -> API) --->
+    const SUPABASE_URL = 'https://mqpcarywowyubjjbesxx.supabase.co';
+    const SUPABASE_ANON_KEY = 'Вsb_publishable_iwmXxKD3q6UReOZ0PI84Vw_kLjtf8ON';
 
-    let sb = null;
+    const $ = (id) => document.getElementById(id);
+
+    function setAuthStatus(text, isOk = false) {
+      const el = $('authStatus');
+      if (!el) return;
+      el.textContent = text || '';
+      el.className = isOk ? 'status-msg ok' : 'status-msg';
+    }
+
+    if (!window.supabase) {
+      setAuthStatus('Ошибка загрузки библиотеки Supabase. Проверьте подключение к интернету.');
+    } else if (SUPABASE_URL.includes('ВАШ_ПРОЕКТ') || SUPABASE_ANON_KEY.includes('ВАШ_ANON')) {
+      setAuthStatus('Впишите SUPABASE_URL и SUPABASE_ANON_KEY в код файла index.html.');
+    }
+
+    const sb = window.supabase
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
     let currentUser = null;
     let currentRole = 'viewer';
 
@@ -407,13 +425,6 @@
       changeHistory: []
     };
 
-    const $ = (id) => document.getElementById(id);
-
-    function setStatus(elId, text) {
-      const el = $(elId);
-      if (el) el.textContent = text || '';
-    }
-
     function applyRoleUI() {
       const isEditor = currentRole === 'editor';
       document.querySelectorAll('.editor-only').forEach((node) => {
@@ -424,7 +435,7 @@
     function renderUserBar() {
       const bar = $('userBar');
       if (!currentUser) {
-        bar.innerHTML = `<span class="muted">Не авторизован</span>`;
+        bar.innerHTML = `<span class="muted">Требуется вход</span>`;
         return;
       }
       bar.innerHTML = `
@@ -435,16 +446,6 @@
       $('logoutBtn').addEventListener('click', async () => {
         await sb.auth.signOut();
       });
-    }
-
-    async function initSupabase(url, key) {
-      if (!url || !key) return;
-      sb = window.supabase.createClient(url, key);
-      sb.auth.onAuthStateChange(async (_event, session) => {
-        await handleSession(session);
-      });
-      const { data: { session } } = await sb.auth.getSession();
-      await handleSession(session);
     }
 
     async function handleSession(session) {
@@ -460,11 +461,19 @@
       const { data: roleRow, error } = await sb
         .from('user_roles')
         .select('role, display_name')
-        .ilike('email', currentUser.email)
+        .ilike('email', currentUser.email.trim())
         .maybeSingle();
 
-      if (error || !roleRow) {
-        setStatus('authStatus', 'Ваш email не найден в таблице user_roles. Обратитесь к администратору.');
+      if (error) {
+        setAuthStatus('Ошибка проверки прав в user_roles: ' + error.message);
+        $('authCard').classList.remove('hidden');
+        $('appSection').classList.add('hidden');
+        renderUserBar();
+        return;
+      }
+
+      if (!roleRow) {
+        setAuthStatus(`Email "${currentUser.email}" не найден в таблице user_roles.`);
         $('authCard').classList.remove('hidden');
         $('appSection').classList.add('hidden');
         renderUserBar();
@@ -472,6 +481,7 @@
       }
 
       currentRole = roleRow.role || 'viewer';
+      setAuthStatus('');
       renderUserBar();
       applyRoleUI();
       $('authCard').classList.add('hidden');
@@ -588,7 +598,6 @@
 
       const boards = state.aircrafts.filter((a) => !fBoard || a.board_number.toLowerCase().includes(fBoard));
 
-      // Подсчёт встречаемости серийных номеров по блоку для подсветки дублей
       const serialCounts = {};
       state.aircraftBlocks.forEach((row) => {
         const clean = (row.value || '').trim().toLowerCase();
@@ -746,8 +755,7 @@
         });
       });
 
-      const searchBody = $('searchResultsTable').querySelector('tbody');
-      searchBody.innerHTML = rows.slice(0, 150).map((row) => `
+      $('searchResultsTable').querySelector('tbody').innerHTML = rows.slice(0, 150).map((row) => `
         <tr>
           <td>${row.where}</td>
           <td>${row.block}</td>
@@ -820,32 +828,30 @@
       `).join('') || `<tr><td colspan="5" class="muted">История пуста</td></tr>`;
     }
 
-    // Обработчики событий
-    $('saveConfigBtn').addEventListener('click', async () => {
-      const url = $('sbUrl').value.trim();
-      const key = $('sbKey').value.trim();
-      localStorage.setItem(LS_URL, url);
-      localStorage.setItem(LS_KEY, key);
-      setStatus('configStatus', 'Подключаюсь...');
-      await initSupabase(url, key);
-      setStatus('configStatus', 'Параметры сохранены.');
-    });
-
-    $('loginBtn').addEventListener('click', async () => {
-      setStatus('authStatus', 'Вход...');
+    // Вход
+    $('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!sb) return;
+      setAuthStatus('Выполняется вход...', true);
       const { error } = await sb.auth.signInWithPassword({
         email: $('loginEmail').value.trim(),
         password: $('loginPassword').value
       });
-      if (error) setStatus('authStatus', error.message);
+      if (error) {
+        setAuthStatus('Ошибка входа: ' + error.message);
+      }
     });
 
     $('magicLinkBtn').addEventListener('click', async () => {
-      setStatus('authStatus', 'Отправка ссылки...');
-      const { error } = await sb.auth.signInWithOtp({
-        email: $('loginEmail').value.trim()
-      });
-      setStatus('authStatus', error ? error.message : 'Ссылка отправлена на почту.');
+      if (!sb) return;
+      const email = $('loginEmail').value.trim();
+      if (!email) {
+        setAuthStatus('Введите Email.');
+        return;
+      }
+      setAuthStatus('Отправка ссылки...', true);
+      const { error } = await sb.auth.signInWithOtp({ email });
+      setAuthStatus(error ? 'Ошибка: ' + error.message : 'Ссылка для входа отправлена на почту.', !error);
     });
 
     document.querySelectorAll('.tab-btn').forEach((btn) => {
@@ -989,13 +995,11 @@
       await loadAllData();
     });
 
-    // Старт
-    const savedUrl = localStorage.getItem(LS_URL) || '';
-    const savedKey = localStorage.getItem(LS_KEY) || '';
-    $('sbUrl').value = savedUrl;
-    $('sbKey').value = savedKey;
-    if (savedUrl && savedKey) {
-      initSupabase(savedUrl, savedKey);
+    if (sb) {
+      sb.auth.onAuthStateChange(async (_event, session) => {
+        await handleSession(session);
+      });
+      sb.auth.getSession().then(({ data: { session } }) => handleSession(session));
     }
   </script>
 </body>
