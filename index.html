@@ -64,54 +64,40 @@
       margin-bottom: 14px;
     }
 
-    /* Карточка авторизации по центру */
-    .auth-wrap {
+    /* Форма авторизации по центру */
+    .auth-screen {
       min-height: calc(100vh - 96px);
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 16px;
     }
-    .auth-box {
+    .auth-panel {
       width: 100%;
-      max-width: 380px;
+      max-width: 360px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 24px 22px;
-      box-shadow: 0 6px 24px rgba(24, 32, 44, 0.06);
-      margin: 0;
+      padding: 24px 20px;
+      box-shadow: 0 4px 18px rgba(24, 32, 44, 0.05);
     }
-    .auth-title {
+    .auth-heading {
       margin: 0 0 18px 0;
-      font-size: 19px;
+      font-size: 18px;
       font-weight: 700;
       text-align: center;
       color: var(--text);
     }
-    .auth-field {
+    .auth-panel input {
+      width: 100%;
+      min-height: 40px;
       margin-bottom: 12px;
-    }
-    .auth-box input {
-      width: 100%;
-      min-height: 40px;
       padding: 9px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font: inherit;
-      background: #fff;
-      color: var(--text);
     }
-    .auth-box input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(29, 95, 214, 0.14);
-    }
-    .auth-submit {
+    .auth-panel button[type="submit"] {
       width: 100%;
       min-height: 40px;
-      margin-top: 4px;
-      font-size: 14px;
+      margin-top: 2px;
     }
 
     .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -124,6 +110,10 @@
       color: var(--text);
     }
     input[type="text"], input[type="email"], input[type="password"], select { min-height: 36px; }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
     button {
       cursor: pointer;
       background: var(--accent);
@@ -213,18 +203,14 @@
   </header>
 
   <main>
-    <!-- Форма входа -->
-    <section class="auth-wrap" id="authCard">
-      <div class="auth-box">
-        <h1 class="auth-title">Учёт движения блоков</h1>
+    <!-- Форма авторизации -->
+    <section class="auth-screen" id="authCard">
+      <div class="auth-panel">
+        <div class="auth-heading">Учёт движения блоков</div>
         <form id="loginForm">
-          <div class="auth-field">
-            <input type="email" id="loginEmail" placeholder="Email" required autocomplete="username" />
-          </div>
-          <div class="auth-field">
-            <input type="password" id="loginPassword" placeholder="Пароль" required autocomplete="current-password" />
-          </div>
-          <button type="submit" id="loginBtn" class="auth-submit">Войти</button>
+          <input type="email" id="loginEmail" placeholder="Email" required autocomplete="username" />
+          <input type="password" id="loginPassword" placeholder="Пароль" required autocomplete="current-password" />
+          <button type="submit" id="loginBtn">Войти</button>
         </form>
         <div class="status-msg" id="authStatus"></div>
       </div>
@@ -511,7 +497,7 @@
       const roleRow = Array.isArray(rows) ? rows[0] : rows;
 
       if (error) {
-        setAuthStatus('Ошибка проверки прав: ' + error.message);
+        setAuthStatus('Ошибка проверки прав в user_roles: ' + error.message);
         $('authCard').classList.remove('hidden');
         $('appSection').classList.add('hidden');
         renderUserBar();
