@@ -13,6 +13,7 @@
       --muted: #5c687a;
       --border: #dce2ea;
       --accent: #1d5fd6;
+      --accent-hover: #174eb5;
       --accent-soft: #eaf1ff;
       --danger: #c62828;
       --danger-bg: #fdecec;
@@ -62,20 +63,57 @@
       padding: 14px;
       margin-bottom: 14px;
     }
+
+    /* Карточка авторизации по центру */
+    .auth-wrap {
+      min-height: calc(100vh - 96px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
     .auth-box {
-      max-width: 420px;
-      margin: 40px auto;
+      width: 100%;
+      max-width: 380px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 22px;
+      box-shadow: 0 6px 24px rgba(24, 32, 44, 0.06);
+      margin: 0;
     }
     .auth-title {
-      margin: 0 0 12px 0;
-      font-size: 18px;
+      margin: 0 0 18px 0;
+      font-size: 19px;
       font-weight: 700;
       text-align: center;
+      color: var(--text);
+    }
+    .auth-field {
+      margin-bottom: 12px;
     }
     .auth-box input {
       width: 100%;
-      margin-bottom: 10px;
+      min-height: 40px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font: inherit;
+      background: #fff;
+      color: var(--text);
     }
+    .auth-box input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(29, 95, 214, 0.14);
+    }
+    .auth-submit {
+      width: 100%;
+      min-height: 40px;
+      margin-top: 4px;
+      font-size: 14px;
+    }
+
     .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
     input, select, button, textarea {
       font: inherit;
@@ -93,11 +131,13 @@
       border-color: var(--accent);
       font-weight: 600;
     }
+    button:hover { background: var(--accent-hover); }
     button.secondary {
       background: #fff;
       color: var(--text);
       border-color: var(--border);
     }
+    button.secondary:hover { background: #f8fafc; }
     button.small { padding: 5px 8px; font-size: 12px; min-height: 30px; }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -158,7 +198,7 @@
     .dup-warn { outline: 2px solid var(--danger); }
 
     .muted { color: var(--muted); font-size: 12px; }
-    .status-msg { font-size: 13px; margin-top: 8px; color: var(--danger); }
+    .status-msg { font-size: 13px; margin-top: 10px; text-align: center; color: var(--danger); }
     .status-msg.ok { color: var(--ok); }
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
     .hidden { display: none !important; }
@@ -174,14 +214,20 @@
 
   <main>
     <!-- Форма входа -->
-    <section class="card auth-box" id="authCard">
-      <div class="auth-title">Учёт движения блоков</div>
-      <form id="loginForm">
-        <input type="email" id="loginEmail" placeholder="Email" required autocomplete="username" />
-        <input type="password" id="loginPassword" placeholder="Пароль" required autocomplete="current-password" />
-        <button type="submit" id="loginBtn" style="width:100%;">Войти</button>
-      </form>
-      <div class="status-msg" id="authStatus"></div>
+    <section class="auth-wrap" id="authCard">
+      <div class="auth-box">
+        <h1 class="auth-title">Учёт движения блоков</h1>
+        <form id="loginForm">
+          <div class="auth-field">
+            <input type="email" id="loginEmail" placeholder="Email" required autocomplete="username" />
+          </div>
+          <div class="auth-field">
+            <input type="password" id="loginPassword" placeholder="Пароль" required autocomplete="current-password" />
+          </div>
+          <button type="submit" id="loginBtn" class="auth-submit">Войти</button>
+        </form>
+        <div class="status-msg" id="authStatus"></div>
+      </div>
     </section>
 
     <!-- Основной интерфейс -->
@@ -410,6 +456,7 @@
 
     let currentUser = null;
     let currentRole = 'viewer';
+    let currentDisplayName = '';
 
     let state = {
       systems: [],
@@ -438,8 +485,9 @@
         bar.innerHTML = `<span class="muted">Требуется вход</span>`;
         return;
       }
+      const label = currentDisplayName ? `${currentDisplayName} (${currentUser.email})` : currentUser.email;
       bar.innerHTML = `
-        <span>${currentUser.email}</span>
+        <span>${label}</span>
         <span class="badge ${currentRole === 'editor' ? '' : 'viewer'}">${currentRole}</span>
         <button class="small secondary" id="logoutBtn">Выйти</button>
       `;
@@ -452,20 +500,18 @@
       currentUser = session?.user || null;
       if (!currentUser) {
         currentRole = 'viewer';
+        currentDisplayName = '';
         renderUserBar();
         $('authCard').classList.remove('hidden');
         $('appSection').classList.add('hidden');
         return;
       }
 
-      const { data: roleRow, error } = await sb
-        .from('user_roles')
-        .select('role, display_name')
-        .ilike('email', currentUser.email.trim())
-        .maybeSingle();
+      const { data: rows, error } = await sb.rpc('get_my_role');
+      const roleRow = Array.isArray(rows) ? rows[0] : rows;
 
       if (error) {
-        setAuthStatus('Ошибка проверки прав в user_roles: ' + error.message);
+        setAuthStatus('Ошибка проверки прав: ' + error.message);
         $('authCard').classList.remove('hidden');
         $('appSection').classList.add('hidden');
         renderUserBar();
@@ -481,6 +527,7 @@
       }
 
       currentRole = roleRow.role || 'viewer';
+      currentDisplayName = roleRow.display_name || '';
       setAuthStatus('');
       renderUserBar();
       applyRoleUI();
@@ -496,7 +543,7 @@
         target_label: targetLabel,
         old_value: String(oldValue ?? ''),
         new_value: String(newValue ?? ''),
-        changed_by: currentUser.email
+        changed_by: currentDisplayName || currentUser.email
       });
     }
 
@@ -671,7 +718,7 @@
           if (rowId) {
             await sb.from('aircraft_blocks').update({
               value: newVal,
-              updated_by: currentUser.email,
+              updated_by: currentDisplayName || currentUser.email,
               updated_at: new Date().toISOString()
             }).eq('id', rowId);
           } else if (newVal) {
@@ -680,7 +727,7 @@
               block_id: blkId,
               slot_index: 1,
               value: newVal,
-              updated_by: currentUser.email
+              updated_by: currentDisplayName || currentUser.email
             });
           }
 
@@ -828,7 +875,6 @@
       `).join('') || `<tr><td colspan="5" class="muted">История пуста</td></tr>`;
     }
 
-    // Вход по email и паролю
     $('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!sb) return;
@@ -837,11 +883,11 @@
       const password = $('loginPassword').value;
 
       if (/[^\x20-\x7E]/.test(email)) {
-        setAuthStatus('В поле Email есть русские буквы или недопустимые символы. Переключите раскладку на английскую.');
+        setAuthStatus('В поле Email есть русские буквы или недопустимые символы.');
         return;
       }
       if (/[^\x20-\x7E]/.test(password)) {
-        setAuthStatus('В поле Пароль есть русские буквы или недопустимые символы. Переключите раскладку на английскую.');
+        setAuthStatus('В поле Пароль есть русские буквы или недопустимые символы.');
         return;
       }
 
@@ -894,7 +940,7 @@
         block_id: blkId,
         value: val,
         item_note: note,
-        updated_by: currentUser.email
+        updated_by: currentDisplayName || currentUser.email
       });
       const locName = state.locations.find((l) => l.id === locId)?.name || locId;
       await logChange('location_items', `${locName}`, '', val);
@@ -921,7 +967,7 @@
         serial_number: serial,
         flag_type: flagType,
         note,
-        updated_by: currentUser.email,
+        updated_by: currentDisplayName || currentUser.email,
         updated_at: new Date().toISOString()
       }, { onConflict: 'block_id,serial_number,flag_type' });
       await logChange('serial_flags', `Пометка ${serial}`, '', flagType);
@@ -939,7 +985,7 @@
         block_id: blkId,
         serial_number: serial,
         comment_text: text,
-        updated_by: currentUser.email
+        updated_by: currentDisplayName || currentUser.email
       });
       await logChange('serial_comments', `Комментарий зав. № ${serial}`, '', text);
       $('commentSerialInput').value = '';
@@ -987,7 +1033,7 @@
         symptom,
         remedy,
         kun,
-        created_by: currentUser.email
+        created_by: currentDisplayName || currentUser.email
       });
       await logChange('fault_logs', `Отказ зав. № ${serial || ''}`, '', symptom);
       $('faultSerialInput').value = '';
