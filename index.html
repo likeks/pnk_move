@@ -45,7 +45,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text-main);
-      line-height: 1.45;
+      line-height: 1.35;
       padding-bottom: 40px;
     }
 
@@ -145,8 +145,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 16px 8px;
-      max-width: 1400px;
+      padding: 10px 16px 6px;
+      max-width: 1800px;
       margin: 0 auto;
     }
 
@@ -192,7 +192,7 @@
       flex-wrap: wrap;
       gap: 6px;
       padding: 4px 16px 10px;
-      max-width: 1400px;
+      max-width: 1800px;
       margin: 0 auto;
     }
 
@@ -202,7 +202,7 @@
       color: var(--text-muted);
       font-size: 13px;
       font-weight: 700;
-      padding: 8px 12px;
+      padding: 7px 12px;
       border-radius: 10px;
       cursor: pointer;
     }
@@ -214,13 +214,15 @@
     }
 
     .stats-bar {
-      padding: 10px 16px 6px;
+      padding: 8px 16px 4px;
       font-size: 12px;
       color: var(--text-muted);
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
+      gap: 8px;
       align-items: center;
-      max-width: 1400px;
+      max-width: 1800px;
       margin: 0 auto;
     }
 
@@ -234,11 +236,11 @@
     }
 
     .container {
-      padding: 8px 16px 24px;
+      padding: 6px 16px 24px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      max-width: 1400px;
+      max-width: 1800px;
       margin: 0 auto;
     }
 
@@ -246,7 +248,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 14px 16px;
+      padding: 12px 14px;
       box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
     }
 
@@ -255,16 +257,21 @@
       flex-wrap: wrap;
       gap: 8px;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .input-sm {
-      padding: 8px 11px;
+      padding: 7px 10px;
       border: 1.5px solid var(--border);
       border-radius: 10px;
-      font-size: 14px;
+      font-size: 13.5px;
       background: #ffffff;
       color: var(--text-main);
+    }
+
+    .input-sm:focus {
+      outline: none;
+      border-color: var(--primary);
     }
 
     .btn-sm {
@@ -272,7 +279,7 @@
       color: #ffffff;
       border: none;
       border-radius: 10px;
-      padding: 8px 13px;
+      padding: 8px 12px;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
@@ -290,63 +297,108 @@
       border: 1px solid #fecaca;
     }
 
+    /* Плотная табличная сетка по образцу Лист1 */
     .table-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      overflow: auto;
+      max-height: 74vh;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
       background: #ffffff;
     }
 
-    table {
-      width: 100%;
+    table.grid-table {
+      width: max-content;
+      min-width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
+      font-size: 12px;
     }
 
-    th, td {
-      border-bottom: 1px solid var(--border);
-      border-right: 1px solid #f1f5f9;
-      padding: 7px 9px;
-      text-align: left;
+    table.grid-table th,
+    table.grid-table td {
+      border: 1px solid #cbd5e1;
+      padding: 4px 6px;
+      text-align: center;
       white-space: nowrap;
+      vertical-align: middle;
     }
 
-    th {
-      background: #f8fafc;
+    table.grid-table th {
+      background: #e2e8f0;
+      color: #0f172a;
       font-weight: 700;
       position: sticky;
       top: 0;
-      z-index: 4;
+      z-index: 5;
     }
 
-    tr.sys-row td {
-      background: var(--primary-light);
-      color: var(--primary);
+    table.grid-table th.sticky-col,
+    table.grid-table td.sticky-col {
+      position: sticky;
+      left: 0;
+      text-align: left;
+      font-weight: 600;
+      background: #f8fafc;
+      z-index: 3;
+      min-width: 145px;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    table.grid-table th.sticky-col {
+      z-index: 7;
+      background: #dbeafe;
+    }
+
+    table.grid-table tr.sys-row td {
+      background: #eff6ff;
+      color: #1e3a8a;
       font-weight: 700;
+      text-align: left;
     }
 
-    .cell-input {
-      width: 96px;
-      padding: 4px 6px;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      font-size: 13px;
+    table.grid-table tr.sys-row td.sticky-col {
+      background: #dbeafe;
+      color: #1e3a8a;
+    }
+
+    .cell-edit {
+      width: 68px;
+      border: none;
       background: transparent;
+      font: inherit;
+      font-size: 12px;
+      text-align: center;
       color: inherit;
+      padding: 2px 3px;
+      outline: none;
     }
 
-    .flag-faulty { background: var(--err-bg) !important; color: var(--err-text); font-weight: 700; }
-    .flag-questionable { background: var(--accent-amber-bg) !important; color: var(--accent-amber); font-weight: 700; }
-    .flag-go_pnk_2ae { background: var(--entity-bg) !important; color: var(--entity-text); font-weight: 700; }
-    .flag-tech { background: var(--primary-light) !important; color: var(--primary); font-weight: 700; }
-    .flag-form_8 { background: var(--ok-bg) !important; color: var(--ok-text); font-weight: 700; }
-    .dup-warn { outline: 2px solid var(--err-text); outline-offset: -2px; }
+    .cell-edit:focus {
+      background: #ffffff;
+      outline: 1.5px solid var(--primary);
+      border-radius: 4px;
+    }
 
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 12px;
-      margin-bottom: 12px;
+    .c-fault { background: #fecaca !important; color: #991b1b; font-weight: 700; }
+    .c-quest { background: #fef08a !important; color: #854d0e; font-weight: 700; }
+    .c-tech { background: #dbeafe !important; color: #1e40af; font-weight: 700; }
+    .c-form8 { background: #bbf7d0 !important; color: #166534; font-weight: 700; }
+    .c-gopnk { background: #ede9fe !important; color: #5b21b6; font-weight: 700; }
+    .c-dup { outline: 2px solid #dc2626; outline-offset: -2px; }
+
+    .legend-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 11.5px;
+      margin-bottom: 8px;
+    }
+
+    .legend-chip {
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
     }
 
     .muted { color: var(--text-muted); font-size: 12px; }
@@ -375,7 +427,7 @@
     </div>
   </div>
 
-  <!-- Основное приложение -->
+  <!-- Основной интерфейс -->
   <div id="mainApp" style="display: none;">
     <div class="header">
       <div class="top-bar">
@@ -385,205 +437,102 @@
           <button id="logoutBtn" class="logout-btn">Выйти</button>
         </div>
       </div>
-      <div class="tabs" id="tabsContainer">
-        <button class="tab-btn active" data-tab="aircrafts">Состав по бортам</button>
-        <button class="tab-btn" data-tab="locations">Места и статусы</button>
-        <button class="tab-btn" data-tab="search">Поиск зав. № и пометки</button>
-        <button class="tab-btn" data-tab="passports">Паспорта и даты</button>
-        <button class="tab-btn" data-tab="faults">Отказы и история</button>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="sheet1">Лист1 (Борта и статусы)</button>
+        <button class="tab-btn" data-tab="native">Родные блоки</button>
+        <button class="tab-btn" data-tab="faults">Отказы</button>
+        <button class="tab-btn" data-tab="works">Работы</button>
+        <button class="tab-btn" data-tab="search">Поиск зав. № и история</button>
       </div>
     </div>
 
     <div class="stats-bar">
-      <span id="statsLabel">Загрузка данных...</span>
+      <span id="statsLabel">Загрузка...</span>
       <span><span class="live-dot"></span><span id="userLabel"></span></span>
     </div>
 
     <div class="container">
-      <!-- 1. Состав по бортам -->
-      <section class="card tab-section" id="sec-aircrafts">
+      <!-- Вкладка 1: Лист1 (борта + статусы/места) -->
+      <section class="card tab-panel" id="panel-sheet1">
         <div class="toolbar">
-          <input type="text" id="filterBoard" class="input-sm" placeholder="Фильтр по борту">
-          <input type="text" id="filterBlock" class="input-sm" placeholder="Фильтр по блоку/системе">
-          <button type="button" id="refreshAircraftsBtn" class="btn-sm secondary">Обновить</button>
+          <input type="text" id="filterBlockInput" class="input-sm" placeholder="Фильтр по блоку/системе...">
+          <input type="text" id="filterBoardInput" class="input-sm" placeholder="Фильтр по борту...">
+          <button type="button" id="resetSheet1FilterBtn" class="btn-sm secondary">Сброс</button>
+          <button type="button" id="reloadDataBtn" class="btn-sm secondary">Обновить из базы</button>
           <span class="editor-only" style="display:inline-flex; gap:6px; margin-left:auto;">
-            <input type="text" id="newBoardInput" class="input-sm" placeholder="Новый борт" style="width:130px;">
-            <button type="button" id="addBoardBtn" class="btn-sm">+ Борт</button>
+            <input type="text" id="newBoardCodeInput" class="input-sm" placeholder="Новый борт" style="width:110px;">
+            <button type="button" id="addBoardCodeBtn" class="btn-sm">+ Борт</button>
+            <button type="button" id="seedFromExcelBtn" class="btn-sm secondary">Загрузить данные из таблицы</button>
           </span>
         </div>
+
+        <div class="legend-bar">
+          <span class="legend-chip c-fault">Неиспр / Неисправные</span>
+          <span class="legend-chip c-quest">Исправность под ?</span>
+          <span class="legend-chip c-tech">ТЭЧ / Сдано в ТЭЧ</span>
+          <span class="legend-chip c-form8">ФОРМА 8</span>
+          <span class="legend-chip c-gopnk">ГО ПНК 2 АЭ</span>
+          <span class="legend-chip c-dup">Дубль зав. №</span>
+        </div>
+
         <div class="table-wrap">
-          <table id="aircraftMatrixTable"></table>
+          <table class="grid-table" id="sheet1Table"></table>
         </div>
       </section>
 
-      <!-- 2. Места и статусы -->
-      <section class="card tab-section hidden" id="sec-locations">
+      <!-- Вкладка 2: Родные блоки -->
+      <section class="card tab-panel hidden" id="panel-native">
         <div class="toolbar">
-          <select id="locationSelect" class="input-sm"></select>
-          <button type="button" id="refreshLocationsBtn" class="btn-sm secondary">Обновить</button>
-        </div>
-        <div class="toolbar editor-only">
-          <select id="locBlockSelect" class="input-sm"></select>
-          <input type="text" id="locValueInput" class="input-sm" placeholder="Зав. № или статус (неиспр, б/н, ?)">
-          <input type="text" id="locNoteInput" class="input-sm" placeholder="Примечание">
-          <button type="button" id="addLocItemBtn" class="btn-sm">Добавить</button>
+          <input type="text" id="filterNativeInput" class="input-sm" placeholder="Фильтр по родному блоку...">
         </div>
         <div class="table-wrap">
-          <table id="locationsTable">
-            <thead>
-              <tr>
-                <th>Система / Блок</th>
-                <th>Значение / Зав. №</th>
-                <th>Примечание</th>
-                <th>Кто обновил</th>
-                <th>Действие</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+          <table class="grid-table" id="nativeTable"></table>
         </div>
       </section>
 
-      <!-- 3. Поиск зав. №, пометки и комментарии -->
-      <section class="card tab-section hidden" id="sec-search">
+      <!-- Вкладка 3: Отказы -->
+      <section class="card tab-panel hidden" id="panel-faults">
+        <div class="toolbar editor-only">
+          <input type="text" id="fDate" class="input-sm" placeholder="Дата отказа" style="width:115px;">
+          <input type="text" id="fWhen" class="input-sm" placeholder="Когда обнаружено" style="width:155px;">
+          <input type="text" id="fBoard" class="input-sm" placeholder="Борт" style="width:85px;">
+          <input type="text" id="fSys" class="input-sm" placeholder="Система" style="width:105px;">
+          <input type="text" id="fSymptom" class="input-sm" placeholder="Внешнее проявление" style="min-width:190px;">
+          <input type="text" id="fRemedy" class="input-sm" placeholder="Способ устранения" style="min-width:160px;">
+          <input type="text" id="fSerial" class="input-sm" placeholder="№ блока" style="width:105px;">
+          <input type="text" id="fKun" class="input-sm" placeholder="КУН" style="width:75px;">
+          <button type="button" id="addFaultRowBtn" class="btn-sm">+ Отказ</button>
+        </div>
+        <div class="table-wrap">
+          <table class="grid-table" id="faultsGridTable"></table>
+        </div>
+      </section>
+
+      <!-- Вкладка 4: Работы -->
+      <section class="card tab-panel hidden" id="panel-works">
+        <div class="toolbar editor-only">
+          <input type="text" id="wBlockInput" class="input-sm" placeholder="Блок">
+          <input type="text" id="wBoardInput" class="input-sm" placeholder="Борт (напр. 739)" style="width:120px;">
+          <input type="text" id="wValInput" class="input-sm" placeholder="Зав. № / отметка" style="width:130px;">
+          <button type="button" id="addWorkRowBtn" class="btn-sm">+ Запись</button>
+        </div>
+        <div class="table-wrap">
+          <table class="grid-table" id="worksGridTable"></table>
+        </div>
+      </section>
+
+      <!-- Вкладка 5: Поиск по зав. № и история изменений -->
+      <section class="card tab-panel hidden" id="panel-search">
         <div class="toolbar">
-          <input type="text" id="serialSearchInput" class="input-sm" placeholder="Поиск по заводскому номеру..." style="min-width:240px;">
-          <button type="button" id="clearSerialBtn" class="btn-sm secondary">Сбросить</button>
+          <input type="text" id="globalSerialInput" class="input-sm" placeholder="Введите заводской номер..." style="min-width:230px;">
+          <button type="button" id="clearGlobalSerialBtn" class="btn-sm secondary">Сбросить</button>
         </div>
-
-        <div class="grid-2">
-          <div class="card editor-only" style="margin:0;">
-            <div class="form-label">Цветовая пометка по зав. №</div>
-            <div class="toolbar" style="margin-bottom:0;">
-              <select id="flagBlockSelect" class="input-sm"></select>
-              <input type="text" id="flagSerialInput" class="input-sm" placeholder="Зав. №" style="width:120px;">
-              <select id="flagTypeSelect" class="input-sm">
-                <option value="faulty">Неисправный блок</option>
-                <option value="questionable">Исправность под ?</option>
-                <option value="go_pnk_2ae">ГО ПНК 2 АЭ</option>
-                <option value="tech">ТЭЧ</option>
-                <option value="form_8">ФОРМА 8</option>
-              </select>
-              <input type="text" id="flagNoteInput" class="input-sm" placeholder="Примечание">
-              <button type="button" id="saveFlagBtn" class="btn-sm">Сохранить</button>
-            </div>
-          </div>
-
-          <div class="card editor-only" style="margin:0;">
-            <div class="form-label">Комментарий к заводскому номеру</div>
-            <div class="toolbar" style="margin-bottom:0;">
-              <select id="commentBlockSelect" class="input-sm"></select>
-              <input type="text" id="commentSerialInput" class="input-sm" placeholder="Зав. №" style="width:120px;">
-              <input type="text" id="commentTextInput" class="input-sm" placeholder="Текст комментария" style="flex:1;">
-              <button type="button" id="saveCommentBtn" class="btn-sm">Добавить</button>
-            </div>
-          </div>
+        <div class="table-wrap" style="margin-bottom:14px;">
+          <table class="grid-table" id="globalSearchTable"></table>
         </div>
-
-        <div class="table-wrap" style="margin-bottom:12px;">
-          <table id="searchResultsTable">
-            <thead>
-              <tr>
-                <th>Где найден</th>
-                <th>Блок / Место</th>
-                <th>Значение / Зав. №</th>
-                <th>Пометка</th>
-                <th>Примечание</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div class="table-wrap">
-          <table id="commentsTable">
-            <thead>
-              <tr>
-                <th>Блок</th>
-                <th>Зав. №</th>
-                <th>Комментарий</th>
-                <th>Автор</th>
-                <th>Дата</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- 4. Паспорта и даты -->
-      <section class="card tab-section hidden" id="sec-passports">
-        <div class="toolbar editor-only">
-          <select id="passBlockSelect" class="input-sm"></select>
-          <select id="passAircraftSelect" class="input-sm"><option value="">— Борт —</option></select>
-          <input type="text" id="passSerialInput" class="input-sm" placeholder="Родной зав. №" style="width:140px;">
-          <input type="text" id="passMfgInput" class="input-sm" placeholder="Дата выпуска" style="width:130px;">
-          <input type="text" id="passRepairInput" class="input-sm" placeholder="Крайний ремонт" style="width:140px;">
-          <input type="text" id="passNotesInput" class="input-sm" placeholder="Примечание">
-          <button type="button" id="savePassportBtn" class="btn-sm">Сохранить</button>
-        </div>
-        <div class="table-wrap">
-          <table id="passportsTable">
-            <thead>
-              <tr>
-                <th>Система / Блок</th>
-                <th>Борт</th>
-                <th>Зав. №</th>
-                <th>Дата выпуска</th>
-                <th>Крайний ремонт</th>
-                <th>Примечание</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- 5. Отказы и история -->
-      <section class="card tab-section hidden" id="sec-faults">
-        <div class="form-label">Новый отказ</div>
-        <div class="toolbar editor-only">
-          <input type="text" id="faultDateInput" class="input-sm" placeholder="Дата" style="width:120px;">
-          <select id="faultAircraftSelect" class="input-sm"><option value="">— Борт —</option></select>
-          <select id="faultBlockSelect" class="input-sm"><option value="">— Блок —</option></select>
-          <input type="text" id="faultSerialInput" class="input-sm" placeholder="Зав. №" style="width:120px;">
-          <input type="text" id="faultSymptomInput" class="input-sm" placeholder="Проявление">
-          <input type="text" id="faultRemedyInput" class="input-sm" placeholder="Устранение">
-          <input type="text" id="faultKunInput" class="input-sm" placeholder="КУН" style="width:100px;">
-          <button type="button" id="addFaultBtn" class="btn-sm">Записать</button>
-        </div>
-
-        <div class="table-wrap" style="margin-bottom:16px;">
-          <table id="faultsTable">
-            <thead>
-              <tr>
-                <th>Дата</th>
-                <th>Борт</th>
-                <th>Блок</th>
-                <th>Зав. №</th>
-                <th>Проявление</th>
-                <th>Устранение</th>
-                <th>КУН</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
         <div class="form-label">История изменений</div>
         <div class="table-wrap">
-          <table id="historyTable">
-            <thead>
-              <tr>
-                <th>Время</th>
-                <th>Пользователь</th>
-                <th>Объект</th>
-                <th>Было</th>
-                <th>Стало</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+          <table class="grid-table" id="historyGridTable"></table>
         </div>
       </section>
     </div>
@@ -595,21 +544,22 @@
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const STATE = {
+    const EXCEL_SEED = {"boards": ["908", "612", "739", "649", "791", "768", "615", "722", "769"], "boardSlots": {"908": 1, "612": 3, "739": 3, "649": 3, "791": 3, "768": 3, "615": 3, "722": 3, "769": 3}, "statusColumns": ["Исправно в группе", "НЕисправно в группе", "Сдано в ТЭЧ", "Неисправные блоки", "Исправность под ?", "Т/а 612", "Н/в", "Во 2 АЭ", "Таган", "ГО ПНК 2 АЭ", "ТЭЧ", "ФОРМА 8"], "actualRows": [{"type": "system", "system": "КП-1Д", "name": "КП-1Д"}, {"type": "block", "system": "КП-1Д", "name": "ГМ-А-04", "boards": {"612": ["7153", "", ""], "739": ["8257", "", ""], "649": ["9857", "", ""], "791": ["8252", "", ""], "768": ["9060", "", ""], "615": ["-", "", ""], "722": ["6270", "", ""], "769": ["7398", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-1Д", "name": "ОЗУ", "boards": {"615": ["-", "", ""]}, "statuses": {"ГО ПНК 2 АЭ": ["+"]}}, {"type": "block", "system": "КП-1Д", "name": "ПЗУ", "boards": {"615": ["-", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-1Д", "name": "Накопитель А", "boards": {"615": ["-", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-1Д", "name": "Накопитель Б", "boards": {"615": ["-", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-1Д", "name": "УВЧ", "boards": {"615": ["-", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-1Д", "name": "КП1-342", "boards": {"612": ["4071", "", ""], "739": ["07004", "", ""], "649": ["5007", "", ""], "791": ["08034", "", ""], "768": ["07024", "", ""], "615": ["4033", "", ""], "722": ["6043", "", ""], "769": ["07026", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-1Д", "name": "КП1-801", "boards": {"612": ["0034", "", ""], "739": ["09070", "", ""], "649": ["94015", "", ""], "791": ["735", "", ""], "768": ["0026", "", ""], "615": ["6053", "", ""], "722": ["6043", "", ""], "769": ["8513", "", ""]}, "statuses": {"Исправно в группе": ["08037"], "НЕисправно в группе": ["07080"], "Сдано в ТЭЧ": ["722"], "Исправность под ?": ["08037", "07080"], "Т/а 612": ["07051"], "ГО ПНК 2 АЭ": ["0026"], "ФОРМА 8": ["08037"]}}, {"type": "block", "system": "КП-1Д", "name": "КП1-20", "boards": {"612": ["3009", "", ""], "739": ["07007", "", ""], "649": ["5007", "", ""], "791": ["635", "", ""], "768": ["0014", "", ""], "615": ["6043", "", ""], "722": ["5054", "", ""], "769": ["07027", "", ""]}, "statuses": {"Исправно в группе": ["07028"], "ГО ПНК 2 АЭ": ["0014"]}}, {"type": "block", "system": "КП-1Д", "name": "КП1-20Б", "boards": {"612": ["08041", "", ""], "739": ["07007", "", ""], "649": ["07028", "", ""], "791": ["4077", "", ""], "768": ["2114", "", ""], "615": ["4027", "", ""], "722": ["07046", "", ""], "769": ["5010", "", ""]}, "statuses": {"Исправно в группе": ["07029"], "ГО ПНК 2 АЭ": ["2114"]}}, {"type": "block", "system": "КП-1Д", "name": "КП1-17Б", "boards": {"612": ["4089", "", ""], "739": ["6073", "", ""], "649": ["4092", "", ""], "791": ["732", "", ""], "768": ["07037", "", ""], "615": ["4021", "", ""], "722": ["09045", "", ""], "769": ["6077", "", ""]}, "statuses": {"НЕисправно в группе": ["97005"], "Исправность под ?": ["6077"], "ФОРМА 8": ["97005"]}}, {"type": "block", "system": "КП-1Д", "name": "Рама УВВ", "boards": {"612": ["0748", "", ""], "739": ["0173", "", ""], "649": ["0256", "", ""], "768": ["08038", "", ""], "615": ["0441", "", ""], "722": ["0660", "", ""], "769": ["07010", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-1Д", "name": "КП1-45А", "boards": {"612": ["0648", "", ""], "739": ["0867", "", ""], "649": ["0155", "", ""], "791": ["08042", "", ""], "768": ["0661", "", ""], "615": ["-", "", ""], "722": ["0565", "", ""], "769": ["0569", "", ""]}, "statuses": {"НЕисправно в группе": ["0342"]}}, {"type": "block", "system": "КП-1Д", "name": "У-34", "boards": {"612": ["497", "", ""], "739": ["08004", "", ""], "649": ["90084", "", ""], "768": ["174", "", ""], "615": ["-", "", ""], "722": ["590", "", ""], "769": ["783", "", ""]}, "statuses": {"Исправно в группе": ["91025"], "Исправность под ?": ["91025"], "Во 2 АЭ": ["07002"], "ГО ПНК 2 АЭ": ["91025"]}}, {"type": "block", "system": "КП-1Д", "name": "У-35", "boards": {"612": ["035", "", ""], "739": ["152", "", ""], "649": ["97006", "", ""], "791": ["07027", "", ""], "768": ["08008", "", ""], "615": ["-", "", ""], "722": ["-", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["028"], "Сдано в ТЭЧ": ["185"], "ГО ПНК 2 АЭ": ["08008"]}}, {"type": "block", "system": "КП-1Д", "name": "У4 - КП2", "boards": {"615": ["-", "", ""]}, "statuses": {"Исправно в группе": ["09054"], "ГО ПНК 2 АЭ": ["075"]}}, {"type": "block", "system": "КП-1Д", "name": "У11 - АДНС-Т", "boards": {"615": ["-", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-1Д", "name": "У28 - КП3", "boards": {"615": ["-", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-1Д", "name": "КП1-8а", "boards": {"612": ["0749", "", ""], "739": ["0170", "", ""], "649": ["0153", "", ""], "791": ["0524", "", ""], "768": ["07010", "", ""], "615": ["0247", "", ""], "722": ["0664", "", ""], "769": ["07013", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-1Д", "name": "КП1-17В", "boards": {"612": ["4012", "", ""], "739": ["6073", "", ""], "649": ["280", "", ""], "791": ["07053", "", ""], "768": ["07020", "", ""], "615": ["0118", "", ""], "722": ["6029", "", ""], "769": ["07028", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-1Д", "name": "КП1-10М", "boards": {"612": ["08050А", "", ""], "739": ["6066А", "", ""], "649": ["90062А", "", ""], "791": ["07030А", "", ""], "768": ["625А", "", ""], "615": ["-", "", ""], "722": ["6070А", "", ""], "769": ["07027А", "", ""]}, "statuses": {"Исправно в группе": ["9024А"], "Сдано в ТЭЧ": ["6040А"], "ГО ПНК 2 АЭ": ["90062А"]}}, {"type": "block", "system": "КП-1Д", "name": "Панель индикации", "boards": {"612": ["+", "", ""], "739": ["740А", "", ""], "649": ["+", "", ""], "615": ["-", "", ""], "722": ["+", "", ""], "769": ["-", "", ""]}, "statuses": {"НЕисправно в группе": ["1044А"], "ГО ПНК 2 АЭ": ["+"]}}, {"type": "block", "system": "КП-1Д", "name": "Наборное поле", "boards": {"612": ["07026А", "", ""], "739": ["08002А", "", ""], "649": ["+", "", ""], "768": ["6030А", "", ""], "615": ["-", "", ""], "722": ["+", "", ""], "769": ["-", "", ""]}, "statuses": {"НЕисправно в группе": ["б/н"], "Сдано в ТЭЧ": ["б/н"]}}, {"type": "block", "system": "КП-1Д", "name": "КП1-10б", "boards": {"612": ["+", "", ""], "739": ["+", "", ""], "649": ["+", "", ""], "791": ["6058", "", ""], "768": ["+", "", ""], "615": ["+", "", ""], "722": ["+", "", ""], "769": ["+", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-1Д", "name": "КП1-4Б (2шт)", "boards": {"612": ["4164", "4165", ""], "739": ["5065", "6273", ""], "649": ["+", "+", ""], "791": ["08041", "08040", ""], "768": ["6193", "08038", ""], "615": ["4047", "6271", ""], "722": ["1108", "6194", ""], "769": ["-", "-", ""]}, "statuses": {"Сдано в ТЭЧ": ["1110"]}}, {"type": "block", "system": "КП-1Д", "name": "КП1-7Б", "boards": {"612": ["92014", "", ""], "739": ["8413", "", ""], "649": ["5006", "", ""], "791": ["1020", "", ""], "768": ["07026", "", ""], "615": ["1062", "", ""], "722": ["-", "", ""], "769": ["07014", "", ""]}, "statuses": {"НЕисправно в группе": ["4080"], "Исправность под ?": ["4080"]}}, {"type": "system", "system": "Световые табло", "name": "Световые табло"}, {"type": "system", "system": "КП-2В", "name": "КП-2В"}, {"type": "block", "system": "КП-2В", "name": "КП2-30", "boards": {"612": ["0392", "", ""], "739": ["0463", "", ""], "649": ["0401", "", ""], "791": ["1277", "", ""], "768": ["1083", "", ""], "615": ["+", "", ""], "722": ["1035", "", ""], "769": ["1084", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-2В", "name": "УП12-МК", "boards": {"612": ["7407", "", ""], "739": ["1777", "", ""], "649": ["7439", "", ""], "791": ["1703", "", ""], "768": ["782", "", ""], "615": ["-", "", ""], "722": ["-", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["0072"], "НЕисправно в группе": ["0414"], "Сдано в ТЭЧ": ["2971", "1782"], "Исправность под ?": ["0414"], "ГО ПНК 2 АЭ": ["7439", "0072"]}}, {"type": "block", "system": "КП-2В", "name": "ВС37-2М", "boards": {"612": ["-", "", ""], "739": ["-", "", ""], "649": ["654", "", ""], "791": ["0298", "", ""], "768": ["-", "", ""], "615": ["-", "", ""], "722": ["-", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["0409", "0415", "0171"]}}, {"type": "block", "system": "КП-2В", "name": "БС1-3К", "boards": {"612": ["7475", "", ""], "739": ["0410", "", ""], "649": ["783", "", ""], "791": ["0210", "", ""], "768": ["0019", "", ""], "615": ["0184", "", ""], "722": ["-", "", ""], "769": ["0271", "", ""]}, "statuses": {"Исправно в группе": ["0058", "1416", "7446"], "ФОРМА 8": ["1416"]}}, {"type": "block", "system": "КП-2В", "name": "ВЧГ", "boards": {"612": ["1490", "", ""], "739": ["1340", "", ""], "649": ["1401", "", ""], "791": ["?", "", ""], "768": ["1598", "", ""], "615": ["0950", "", ""], "722": ["1166", "", ""], "769": ["-", "", ""]}, "statuses": {"Сдано в ТЭЧ": ["1480", "1397"], "ГО ПНК 2 АЭ": ["1598"]}}, {"type": "block", "system": "КП-2В", "name": "УП", "boards": {"612": ["0413", "", ""], "739": ["0492", "", ""], "649": ["0423", "", ""], "791": ["0199", "", ""], "768": ["0106", "", ""], "615": ["7625", "", ""], "722": ["0048", "", ""], "769": ["0101", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-2В", "name": "КП2-47", "boards": {"612": ["1556", "", ""], "739": ["0504", "", ""], "649": ["2916", "", ""], "791": ["0184", "", ""], "768": ["0049", "", ""], "615": ["-", "", ""], "722": ["1566", "", ""], "769": ["1301", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-2В", "name": "КП2-4А", "boards": {"612": ["4076", "", ""], "739": ["4018", "", ""], "649": ["08080", "", ""], "791": ["080211", "", ""], "768": ["5019", "", ""], "615": ["-", "", ""], "722": ["6084", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["07047"], "НЕисправно в группе": ["6040"]}}, {"type": "block", "system": "КП-2В", "name": "ИКО", "boards": {"612": ["4022", "", ""], "739": ["5099", "", ""], "649": ["745", "", ""], "791": ["07025", "", ""], "768": ["07006", "", ""], "615": ["07043", "", ""], "722": ["-", "", ""], "769": ["4078", "", ""]}, "statuses": {"Сдано в ТЭЧ": ["1030", "8012"]}}, {"type": "block", "system": "КП-2В", "name": "ИВР", "boards": {"612": ["07018", "", ""], "739": ["6096", "", ""], "649": ["4028", "", ""], "791": ["0131", "", ""], "768": ["6060", "", ""], "615": ["5010", "", ""], "722": ["-", "", ""], "769": ["-", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-2В", "name": "КП2-4АПУ", "boards": {"612": ["+", "", ""], "739": ["+", "", ""], "649": ["+", "", ""], "791": ["09059", "", ""], "768": ["+", "", ""], "615": ["-", "", ""], "722": ["+", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["5073"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-21", "boards": {"612": ["0467", "", ""], "739": ["0737", "", ""], "649": ["0738", "", ""], "791": ["0238", "", ""], "768": ["0610", "", ""], "615": ["0116", "", ""], "722": ["0837", "", ""], "769": ["0611", "", ""]}, "statuses": {"Исправно в группе": ["0231"], "ФОРМА 8": ["0231"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-11А", "boards": {"612": ["07025", "", ""], "739": ["07007", "", ""], "649": ["5004", "", ""], "791": ["1061", "", ""], "768": ["09006", "", ""], "615": ["93029", "", ""], "722": ["07003", "", ""], "769": ["8518", "", ""]}, "statuses": {"Исправно в группе": ["4079"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-12А", "boards": {"612": ["0763", "", ""], "739": ["1552", "", ""], "649": ["0417", "", ""], "791": ["08040", "", ""], "768": ["0733", "", ""], "615": ["0374", "", ""], "722": ["1513", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["0413"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-33", "boards": {"612": ["4213", "", ""], "739": ["6818", "", ""], "649": ["5132", "", ""], "791": ["08033", "", ""], "768": ["07411", "", ""], "615": ["1332", "", ""], "722": ["6514", "", ""], "769": ["07316", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-2В", "name": "КП2-10Б (2 шт.)", "boards": {"612": ["6739", "6913", ""], "739": ["7114", "7113", ""], "649": ["4117", "4216", ""], "791": ["6422", "08074", ""], "768": ["07615", "07617", ""], "615": ["3633", "6919", ""], "722": ["2636", "1634", ""], "769": ["07811", "07714", ""]}, "statuses": {"Исправно в группе": ["1061-1"], "Исправность под ?": ["1061-1"], "ГО ПНК 2 АЭ": ["1061-1"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-48В", "boards": {"612": ["08039", "", ""], "739": ["152", "", ""], "649": ["4013", "", ""], "791": ["6711", "", ""], "768": ["2156", "", ""], "615": ["4019", "", ""], "722": ["6710", "", ""], "769": ["133", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-2В", "name": "КП2-34А", "boards": {"612": ["0405", "", ""], "739": ["1144", "", ""], "649": ["0409", "", ""], "791": ["2951", "", ""], "768": ["0701", "", ""], "615": ["2922", "", ""], "722": ["1049", "", ""], "769": ["0730", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-2В", "name": "КП2-701", "boards": {"612": ["0771", "", ""], "739": ["1157", "", ""], "649": ["0423", "", ""], "791": ["0710", "", ""], "768": ["1039", "", ""], "615": ["0384", "", ""], "722": ["-", "", ""], "769": ["0452", "", ""]}, "statuses": {"Исправно в группе": ["0931"], "Исправность под ?": ["0931"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-8 и", "boards": {"612": ["0405", "", ""], "739": ["1037", "", ""], "649": ["0465", "", ""], "791": ["0961", "", ""], "768": ["0790", "", ""], "615": ["-", "", ""], "722": ["1039", "", ""], "769": ["0421", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-2В", "name": "КП2-8 г", "boards": {"612": ["0212", "", ""], "739": ["1166", "", ""], "649": ["0463", "", ""], "791": ["0417", "", ""], "768": ["0943", "", ""], "615": ["0492", "", ""], "722": ["515011", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["0702"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-8 е", "boards": {"612": ["0553", "", ""], "739": ["1167", "", ""], "649": ["0019", "", ""], "791": ["0732", "", ""], "768": ["1040", "", ""], "615": ["1161", "", ""], "722": ["9501", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["0940"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-8 ж", "boards": {"612": ["0454", "", ""], "739": ["1167", "", ""], "649": ["0415", "", ""], "791": ["0933", "", ""], "768": ["0721", "", ""], "615": ["0380", "", ""], "722": ["1037", "", ""], "769": ["0751", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-2В", "name": "КП2-8 з", "boards": {"612": ["0955", "", ""], "739": ["1166", "", ""], "649": ["0741", "", ""], "791": ["1028", "", ""], "768": ["0787", "", ""], "615": ["-", "", ""], "722": ["-", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["0133", "0992", "7406"], "Сдано в ТЭЧ": ["1156"], "Исправность под ?": ["0133", "0992", "7406"], "ГО ПНК 2 АЭ": ["7406"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-8 к", "boards": {"612": ["0790", "", ""], "739": ["1166", "", ""], "649": ["0707", "", ""], "791": ["0971", "", ""], "768": ["0582", "", ""], "615": ["0711", "", ""], "722": ["-", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["0333", "0472"], "Исправность под ?": ["0472"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-8 л", "boards": {"612": ["1158", "", ""], "739": ["1039", "", ""], "649": ["0790", "", ""], "791": ["0901", "", ""], "768": ["0291", "", ""], "615": ["-", "", ""], "722": ["-", "", ""], "769": ["0771", "", ""]}, "statuses": {"Исправно в группе": ["0042"], "Сдано в ТЭЧ": ["0221"], "Исправность под ?": ["0042"], "ГО ПНК 2 АЭ": ["0221"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-8 м", "boards": {"612": ["0160", "", ""], "739": ["1156", "", ""], "649": ["422020", "", ""], "791": ["0112", "", ""], "768": ["0760", "", ""], "615": ["0304", "", ""], "722": ["-", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["0764", "0157"], "Исправность под ?": ["0157", "0764"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-20 (2 шт.)", "boards": {"612": ["0832", "0842", ""], "739": ["0742", "1662", ""], "649": ["0854", "0805", ""], "791": ["2063", "0671", ""], "768": ["0672", "0643", ""], "615": ["0793", "0714", ""], "722": ["-", "1259", ""], "769": ["-", "1615", ""]}, "statuses": {"Исправно в группе": ["1652", "0935", "2053"], "ФОРМА 8": ["0935"]}}, {"type": "block", "system": "КП-2В", "name": "2КП2-20А", "boards": {"612": ["0462", "", ""], "739": ["1150", "", ""], "649": ["0081", "", ""], "791": ["0346", "", ""], "768": ["0702", "", ""], "615": ["0930", "", ""], "722": ["1040", "", ""], "769": ["0761", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-2В", "name": "УК", "boards": {"612": ["0471", "", ""], "739": ["1153", "", ""], "649": ["0771", "", ""], "791": ["0912", "", ""], "768": ["0226", "", ""], "615": ["-", "", ""], "722": ["1028", "", ""], "769": ["0266", "", ""]}, "statuses": {"Исправно в группе": ["1029"], "Сдано в ТЭЧ": ["1048"], "ГО ПНК 2 АЭ": ["0226"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-6А", "boards": {"612": ["5081", "", ""], "739": ["6067", "", ""], "649": ["1053", "", ""], "791": ["08043", "", ""], "768": ["3069", "", ""], "615": ["-", "", ""], "722": ["-", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["8117"], "Сдано в ТЭЧ": ["4074"], "Исправность под ?": ["5043", "8117"], "Т/а 612": ["5043"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-7-0", "boards": {"612": ["1137", "", ""], "739": ["0432", "", ""], "649": ["0024", "", ""], "791": ["0427", "", ""], "768": ["0230", "", ""], "615": ["0991", "", ""], "722": ["-", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["0711", "0428", "1039"], "Исправность под ?": ["0711", "1039"], "ГО ПНК 2 АЭ": ["0230"]}}, {"type": "block", "system": "КП-2В", "name": "КП2-51", "boards": {"612": ["0506", "", ""], "739": ["1164", "", ""], "649": ["0023", "", ""], "791": ["0760", "", ""], "768": ["0741", "", ""], "615": ["-", "", ""], "722": ["-", "", ""], "769": ["0921", "", ""]}, "statuses": {"Исправно в группе": ["0235"], "Сдано в ТЭЧ": ["1059"]}}, {"type": "block", "system": "КП-2В", "name": "ФНЧ", "boards": {"612": ["4056", "", ""], "739": ["6079", "", ""], "649": ["4073", "", ""], "791": ["08027", "", ""], "768": ["07020", "", ""], "615": ["4013", "", ""], "722": ["6055", "", ""], "769": ["07030", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-2В", "name": "КП2-1", "boards": {"791": ["6020", "", ""], "615": ["неиспр", "", ""], "769": ["неиспр", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-2В", "name": "Редуктор азимута", "boards": {}, "statuses": {"Исправно в группе": ["66-73"]}}, {"type": "block", "system": "КП-2В", "name": "Редуктор крена/тангажа", "boards": {"739": ["С25-62", "", ""]}, "statuses": {"Исправно в группе": ["25-5", "166-55", "22-18", "б/н"], "НЕисправно в группе": ["66-9"]}}, {"type": "block", "system": "КП-2В", "name": "КП2А-17", "boards": {"612": ["4172", "", ""], "739": ["6112", "", ""], "649": ["4171", "", ""], "791": ["08047", "", ""], "768": ["07023", "", ""], "615": ["4043", "", ""], "722": ["6090", "", ""], "769": ["07037", "", ""]}, "statuses": {}}, {"type": "system", "system": "КП-3А", "name": "КП-3А"}, {"type": "block", "system": "КП-3А", "name": "6ЭМ-2М", "boards": {"612": ["899", "", ""], "739": ["1116", "", ""], "649": ["402", "", ""], "791": ["549", "", ""], "768": ["4985", "", ""], "615": ["-", "", ""], "722": ["-", "", ""], "769": ["-", "", ""]}, "statuses": {"НЕисправно в группе": ["ЕВ-112"], "Сдано в ТЭЧ": ["717", "524"], "ГО ПНК 2 АЭ": ["4985"]}}, {"type": "block", "system": "КП-3А", "name": "2ЭМ-3", "boards": {"612": ["678", "", ""], "739": ["264", "", ""], "649": ["334", "", ""], "791": ["583", "", ""], "768": ["315", "", ""], "615": ["-", "", ""], "722": ["-", "", ""], "769": ["233", "", ""]}, "statuses": {"Исправно в группе": ["898"], "Сдано в ТЭЧ": ["724"], "ГО ПНК 2 АЭ": ["324"]}}, {"type": "block", "system": "КП-3А", "name": "2НВ-5", "boards": {"612": ["834", "", ""], "739": ["923", "", ""], "649": ["784", "", ""], "791": ["806", "", ""], "768": ["540", "", ""], "615": ["-", "", ""], "722": ["-", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["969", "592"], "Сдано в ТЭЧ": ["415"], "ГО ПНК 2 АЭ": ["969"]}}, {"type": "block", "system": "КП-3А", "name": "2НВ-5А", "boards": {"612": ["159", "", ""], "739": ["512", "", ""], "649": ["629", "", ""], "791": ["849", "", ""], "768": ["603", "", ""], "615": ["-", "", ""], "722": ["294", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["321", "1113"]}}, {"type": "block", "system": "КП-3А", "name": "6ЭМ-8", "boards": {"612": ["731", "", ""], "739": ["232", "", ""], "649": ["ЕВ-96", "", ""], "791": ["681", "", ""], "768": ["549", "", ""], "615": ["-", "", ""], "722": ["-", "", ""], "769": ["748", "", ""]}, "statuses": {"Сдано в ТЭЧ": ["565", "ЕВ-146"]}}, {"type": "block", "system": "КП-3А", "name": "6ЭМ-14", "boards": {"612": ["549", "", ""], "739": ["846", "", ""], "649": ["565", "", ""], "791": ["684", "", ""], "768": ["683", "", ""], "615": ["719", "", ""], "722": ["-", "", ""], "769": ["476", "", ""]}, "statuses": {"Исправно в группе": ["687"]}}, {"type": "block", "system": "КП-3А", "name": "КП3-28А", "boards": {"612": ["613", "", ""], "739": ["280", "", ""], "649": ["653", "", ""], "791": ["256", "", ""], "768": ["686", "", ""], "615": ["618", "", ""], "722": ["821", "", ""], "769": ["-", "", ""]}, "statuses": {"Исправно в группе": ["803"]}}, {"type": "block", "system": "КП-3А", "name": "КП3-3", "boards": {"612": ["607", "", ""], "739": ["840", "", ""], "649": ["371", "", ""], "791": ["803", "", ""], "768": ["675", "", ""], "615": ["649", "", ""], "722": ["676", "", ""], "769": ["-", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-3А", "name": "КП3-17А", "boards": {"612": ["549", "", ""], "739": ["441", "", ""], "649": ["297", "", ""], "791": ["232", "", ""], "768": ["731", "", ""], "615": ["628", "", ""], "722": ["733", "", ""], "769": ["363", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-3А", "name": "2НВ-10 (2шт.)", "boards": {"612": ["+", "549", ""], "739": ["+", "719", ""], "649": ["+", "565", ""], "791": ["846", "846", ""], "768": ["+", "731", ""], "615": ["+", "+", ""], "722": ["+", "683", ""], "769": ["-", "748", ""]}, "statuses": {"Исправно в группе": ["748"]}}, {"type": "block", "system": "КП-3А", "name": "2НВ-4А (2шт.)", "boards": {"612": ["1437", "1020", ""], "739": ["1359", "1361", ""], "649": ["1048", "1038", ""], "791": ["1662", "1663", ""], "768": ["1396", "1400", ""], "615": ["689", "+", ""], "722": ["1282", "1287", ""], "769": ["-", "1431", ""]}, "statuses": {"Исправно в группе": ["1457"], "Сдано в ТЭЧ": ["1013"], "ФОРМА 8": ["1457"]}}, {"type": "block", "system": "КП-3А", "name": "2НВ-10Б", "boards": {"612": ["549", "", ""], "739": ["719", "", ""], "649": ["565", "", ""], "791": ["1089", "", ""], "768": ["726", "", ""], "615": ["476", "", ""], "722": ["683", "", ""], "769": ["748", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-3А", "name": "2НВ-10В", "boards": {"612": ["+", "", ""], "739": ["+", "", ""], "649": ["+", "", ""], "791": ["825", "", ""], "768": ["+", "", ""], "615": ["+", "", ""], "722": ["+", "", ""], "769": ["+", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-3А", "name": "2НВ-10А", "boards": {"612": ["+", "", ""], "739": ["+", "", ""], "649": ["+", "", ""], "791": ["+", "", ""], "768": ["+", "", ""], "615": ["+", "", ""], "722": ["+", "", ""], "769": ["-", "", ""]}, "statuses": {"Сдано в ТЭЧ": ["476", "748"]}}, {"type": "block", "system": "КП-3А", "name": "КП3-10", "boards": {"612": ["+", "", ""], "739": ["+", "", ""], "649": ["+", "", ""], "791": ["781", "", ""], "768": ["+", "", ""], "615": ["+", "", ""], "722": ["+", "", ""], "769": ["+", "", ""]}, "statuses": {"Исправно в группе": ["690"], "ФОРМА 8": ["690"]}}, {"type": "block", "system": "КП-3А", "name": "НВ-Ф2", "boards": {"612": ["549", "", ""], "739": ["719", "", ""], "649": ["565", "", ""], "791": ["772", "", ""], "768": ["731", "", ""], "615": ["476", "", ""], "722": ["733", "", ""], "769": ["748", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП-3А", "name": "6ЭМ-1Б", "boards": {"791": ["976", "", ""], "615": ["неиспр", "", ""]}, "statuses": {"Сдано в ТЭЧ": ["767", "331"]}}, {"type": "system", "system": "КП3-32А", "name": "КП3-32А"}, {"type": "block", "system": "КП3-32А", "name": "КП3-47", "boards": {"791": ["880301", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП3-32А", "name": "Узел реверса", "boards": {}, "statuses": {"Исправно в группе": ["б/н", "б/н"], "Таган": ["б/н"], "ГО ПНК 2 АЭ": ["+"]}}, {"type": "block", "system": "КП3-32А", "name": "ВЧ фильтр", "boards": {"791": ["А-9", "", ""]}, "statuses": {}}, {"type": "system", "system": "ДИСС-013-С2М", "name": "ДИСС-013-С2М"}, {"type": "block", "system": "ДИСС-013-С2М", "name": "Блок ВЧ", "boards": {"612": ["20088", "", ""], "791": ["60111", "", ""]}, "statuses": {"Исправно в группе": ["70240", "50090", "00340"], "НЕисправно в группе": ["30515"], "ФОРМА 8": ["50090", "70240"]}}, {"type": "block", "system": "ДИСС-013-С2М", "name": "Рама БС-3М", "boards": {"612": ["50025", "", ""], "739": ["60098", "", ""], "649": ["40106", "", ""], "791": ["90185", "", ""], "768": ["50111", "", ""], "615": ["90002", "", ""], "722": ["70055", "", ""], "769": ["70074", "", ""]}, "statuses": {"Исправно в группе": ["26010"], "НЕисправно в группе": ["60054", "30020"], "ФОРМА 8": ["26010", "30020", "60054"]}}, {"type": "block", "system": "ДИСС-013-С2М", "name": "Блок НЧ", "boards": {"612": ["20348А", "", ""], "739": ["50018А", "", ""], "649": ["20315А", "", ""], "791": ["80334А", "", ""], "768": ["10376А", "", ""], "615": ["80232", "", ""], "722": ["90336А", "", ""], "769": ["70068", "", ""]}, "statuses": {"Исправно в группе": ["10198", "30061", "60050А", "70080", "70241"], "Исправность под ?": ["60050А", "70080"], "Н/в": ["20062"], "Таган": ["60014А"], "ТЭЧ": ["10376А"], "ФОРМА 8": ["70241", "20348А", "20062"]}}, {"type": "block", "system": "ДИСС-013-С2М", "name": "БС-3М", "boards": {"612": ["40014", "", ""], "739": ["00021", "", ""], "649": ["70051", "", ""], "791": ["90203", "", ""], "768": ["30005", "", ""], "615": ["70013", "", ""], "722": ["-", "", ""], "769": ["80129", "", ""]}, "statuses": {"Исправно в группе": ["70046", "90165"], "Сдано в ТЭЧ": ["60122", "80041"], "ГО ПНК 2 АЭ": ["80041"], "ТЭЧ": ["30005"], "ФОРМА 8": ["70046", "90165"]}}, {"type": "block", "system": "ДИСС-013-С2М", "name": "ИП 2/1", "boards": {"612": ["70162", "", ""], "739": ["00317", "", ""], "649": ["00435", "", ""], "768": ["70083", "", ""], "615": ["80468", "", ""], "722": ["80503", "", ""], "769": ["70081", "", ""]}, "statuses": {}}, {"type": "system", "system": "К-II-76", "name": "К-II-76"}, {"type": "block", "system": "К-II-76", "name": "К-II-25", "boards": {"612": ["4032", "", ""], "739": ["6059", "", ""], "649": ["5005", "", ""], "791": ["08038", "", ""], "768": ["07015", "", ""], "615": ["-", "", ""], "722": ["6045", "", ""], "769": ["6046", "", ""]}, "statuses": {"Исправно в группе": ["4035"]}}, {"type": "block", "system": "К-II-76", "name": "К17В", "boards": {"612": ["4066", "", ""], "649": ["5004", "", ""], "791": ["08019", "", ""]}, "statuses": {}}, {"type": "block", "system": "К-II-76", "name": "К-17Л", "boards": {"739": ["6054", "", ""], "791": ["08026", "", ""], "768": ["07014", "", ""], "615": ["-", "", ""], "722": ["6025", "", ""], "769": ["07008", "", ""]}, "statuses": {}}, {"type": "system", "system": "КП7", "name": "КП7"}, {"type": "block", "system": "КП7", "name": "КП7-34", "boards": {"612": ["467", "", ""], "739": ["658", "", ""], "649": ["474", "", ""], "791": ["819", "", ""], "768": ["707", "", ""], "615": ["+", "", ""], "722": ["618", "", ""], "769": ["709", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП7", "name": "КП7-801", "boards": {"612": ["465", "", ""], "739": ["654", "", ""], "649": ["472", "", ""], "791": ["871", "", ""], "768": ["673", "", ""], "615": ["-", "", ""], "722": ["609", "", ""], "769": ["705", "", ""]}, "statuses": {"Исправно в группе": ["05106"]}}, {"type": "block", "system": "КП7", "name": "КП7-14", "boards": {"612": ["463", "", ""], "739": ["657", "", ""], "649": ["469", "", ""], "791": ["819", "", ""], "768": ["705", "", ""], "615": ["-", "", ""], "722": ["617", "", ""], "769": ["706", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП7", "name": "КП7-14А", "boards": {"612": ["459", "", ""], "739": ["656", "", ""], "649": ["467", "", ""], "791": ["818", "", ""], "768": ["705", "", ""], "615": ["420", "", ""], "722": ["616", "", ""], "769": ["706", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП7", "name": "КП7-25", "boards": {"612": ["465", "", ""], "739": ["660", "", ""], "649": ["460", "", ""], "791": ["816", "", ""], "768": ["704", "", ""], "615": ["427", "", ""], "722": ["666", "", ""], "769": ["706", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП7", "name": "КП7-46", "boards": {"612": ["466", "", ""], "739": ["658", "", ""], "649": ["806", "", ""], "791": ["818", "", ""], "768": ["701", "", ""], "615": ["429", "", ""], "722": ["617", "", ""], "769": ["11501", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП7", "name": "КП7-17", "boards": {"612": ["5332", "5333", "5331"], "739": ["6679", "6685", "6696"], "649": ["5372", "5371", ""], "791": ["8068", "8069", "8071"], "768": ["7024", "7023", "7047"], "615": ["5155", "5154", ""], "722": ["6514", "6518", "6515"], "769": ["7050", "7029", "7049"]}, "statuses": {}}, {"type": "block", "system": "КП7", "name": "КП7-17", "boards": {"612": ["5336", "5335", ""], "739": ["6697", "6698", ""], "649": ["5367", "5370", "5374"], "791": ["8072", "8073", ""], "768": ["7027", "7025", ""], "615": ["5151", "5152", "5153"], "722": ["6516", "6513", ""], "769": ["7026", "7028", ""]}, "statuses": {}}, {"type": "block", "system": "КП7", "name": "КП2А-17", "boards": {"612": ["4156", "", ""], "739": ["6159", "", ""], "649": ["5006", "", ""], "791": ["08074", "", ""], "768": ["07011", "", ""], "722": ["6060", "", ""], "769": ["07038", "", ""]}, "statuses": {}}, {"type": "system", "system": "КП4", "name": "КП4"}, {"type": "block", "system": "КП4", "name": "КЛ6-00", "boards": {"612": ["31688", "", ""], "739": ["12642", "", ""], "649": ["42050", "", ""], "791": ["04599", "", ""], "768": ["90868", "", ""], "615": ["43438", "", ""], "722": ["75291", "", ""], "769": ["60530", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП4", "name": "КЛ2-00", "boards": {"612": ["80318", "", ""], "739": ["60236", "", ""], "649": ["80219", "", ""], "791": ["80152", "", ""], "768": ["60217", "", ""], "615": ["40135", "", ""], "722": ["60265", "", ""], "769": ["90237", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП4", "name": "КЛ3-00А", "boards": {"612": ["60137", "", ""], "739": ["60257", "", ""], "649": ["60285", "", ""], "791": ["80220", "", ""], "768": ["50217", "", ""], "615": ["80245", "", ""], "722": ["90104", "", ""], "769": ["-", "", ""]}, "statuses": {}}, {"type": "block", "system": "КП4", "name": "КЛ1-00 (2 шт.)", "boards": {}, "statuses": {}}, {"type": "block", "system": "КП4", "name": "Приёмник КЛ-3а", "boards": {"612": ["40135", "", ""], "739": ["50175", "", ""], "649": ["80163", "", ""], "791": ["80106", "", ""], "768": ["60144", "", ""], "615": ["-", "", ""], "722": ["50178", "", ""], "769": ["60143", "", ""]}, "statuses": {}}, {"type": "system", "system": "С3М", "name": "С3М"}, {"type": "block", "system": "С3М", "name": "С3М-3М", "boards": {"739": ["066691", "", ""], "791": ["048388", "", ""]}, "statuses": {}}, {"type": "block", "system": "С3М", "name": "С3М-10", "boards": {"791": ["048388", "", ""]}, "statuses": {}}, {"type": "block", "system": "С3М", "name": "С3М-4А", "boards": {"791": ["048388", "", ""]}, "statuses": {}}, {"type": "block", "system": "С3М", "name": "С3М-12", "boards": {"739": ["056655", "", ""], "791": ["107887", "", ""]}, "statuses": {}}, {"type": "block", "system": "С3М", "name": "С3М-9М", "boards": {"908": ["106224"]}, "statuses": {"ФОРМА 8": ["106224"]}}, {"type": "block", "system": "С3М", "name": "С3М-5Б", "boards": {"791": ["048388", "7М001", "7П003"]}, "statuses": {}}, {"type": "system", "system": "А-817", "name": "А-817"}, {"type": "system", "system": "ЮГ-01", "name": "ЮГ-01"}, {"type": "block", "system": "ЮГ-01", "name": "Рама монтажная", "boards": {"615": ["0917", "", ""]}, "statuses": {}}, {"type": "system", "system": "С1.4", "name": "С1.4"}, {"type": "system", "system": "С1.8", "name": "С1.8"}, {"type": "system", "system": "С1.7", "name": "С1.7"}], "nativeRows": [{"type": "system", "system": "КП-1Д", "name": "КП-1Д"}, {"type": "block", "system": "КП-1Д", "name": "ГМ-А-04", "boards": {"908": ["3133"], "612": ["5255", "", ""], "739": ["8257", "", ""], "649": ["9857", "", ""], "768": ["7153", "", ""], "615": ["3125", "", ""], "722": ["5476", "", ""], "769": ["7398", "", ""]}}, {"type": "system", "system": "ОЗУ", "name": "ОЗУ"}, {"type": "system", "system": "ПЗУ", "name": "ПЗУ"}, {"type": "system", "system": "Накопитель А", "name": "Накопитель А"}, {"type": "system", "system": "Накопитель Б", "name": "Накопитель Б"}, {"type": "system", "system": "УВЧ", "name": "УВЧ"}, {"type": "block", "system": "УВЧ", "name": "КП1-342", "boards": {"908": ["1125"], "612": ["4071", "", ""], "739": ["07004", "", ""], "649": ["5007", "", ""], "768": ["07024", "", ""], "615": ["4033", "", ""], "722": ["6043", "", ""], "769": ["07026", "", ""]}}, {"type": "block", "system": "УВЧ", "name": "КП1-801", "boards": {"908": ["8513"], "612": ["4043", "", ""], "739": ["94015", "", ""], "649": ["08037", "", ""], "768": ["07051", "", ""], "615": ["07080", "", ""], "722": ["6043", "", ""], "769": ["735", "", ""]}}, {"type": "block", "system": "УВЧ", "name": "КП1-20", "boards": {"908": ["9103"], "612": ["5054", "", ""], "739": ["07007", "", ""], "649": ["5007", "", ""], "768": ["07027", "", ""], "615": ["6043", "", ""], "722": ["5054", "", ""], "769": ["07028", "", ""]}}, {"type": "block", "system": "УВЧ", "name": "КП1-20Б", "boards": {"908": ["1133"], "612": ["4077", "", ""], "739": ["07007", "", ""], "649": ["5010", "", ""], "768": ["07029", "", ""], "615": ["4027", "", ""], "722": ["07048", "", ""], "769": ["07028", "", ""]}}, {"type": "block", "system": "УВЧ", "name": "КП1-17Б", "boards": {"908": ["07079"], "612": ["4089", "", ""], "739": ["6073", "", ""], "649": ["4092", "", ""], "768": ["07037", "", ""], "615": ["4021", "", ""], "722": ["6033", "", ""], "769": ["07032", "", ""]}}, {"type": "block", "system": "УВЧ", "name": "Рама УВВ", "boards": {"908": ["0815"], "612": ["0748", "", ""], "739": ["0173", "", ""], "649": ["0256", "", ""], "768": ["07006", "", ""], "615": ["0441", "", ""], "722": ["0660", "", ""], "769": ["07010", "", ""]}}, {"type": "block", "system": "УВЧ", "name": "КП1-45А", "boards": {"908": ["8304"], "612": ["0648", "", ""], "739": ["0867", "", ""], "649": ["0155", "", ""], "768": ["0661", "", ""], "615": ["0342", "", ""], "722": ["0565", "", ""], "769": ["07015", "", ""]}}, {"type": "system", "system": "У-34", "name": "У-34"}, {"type": "system", "system": "У-35", "name": "У-35"}, {"type": "system", "system": "У4 - КП2", "name": "У4 - КП2"}, {"type": "system", "system": "У11 - АДНС-Т", "name": "У11 - АДНС-Т"}, {"type": "system", "system": "У28 - КП3", "name": "У28 - КП3"}, {"type": "block", "system": "У28 - КП3", "name": "КП1-8а", "boards": {"908": ["0615"], "612": ["0749", "", ""], "739": ["0170", "", ""], "649": ["0153", "", ""], "768": ["07010", "", ""], "615": ["0247", "", ""], "722": ["0664", "", ""], "769": ["07013", "", ""]}}, {"type": "block", "system": "У28 - КП3", "name": "КП1-17В", "boards": {"908": ["1033"], "612": ["4012", "", ""], "739": ["6073", "", ""], "649": ["260", "", ""], "768": ["07020", "", ""], "615": ["0118", "", ""], "722": ["6029", "", ""], "769": ["07028", "", ""]}}, {"type": "block", "system": "У28 - КП3", "name": "КП1-10М", "boards": {"908": ["9024А"], "612": ["07043А", "", ""], "739": ["6040А", "", ""], "649": ["625А", "", ""], "768": ["07030А", "", ""], "615": ["3007А", "", ""], "722": ["6070А", "", ""], "769": ["07027", "", ""]}}, {"type": "block", "system": "У28 - КП3", "name": "Панель индикации", "boards": {}}, {"type": "block", "system": "У28 - КП3", "name": "Наборное поле", "boards": {}}, {"type": "block", "system": "У28 - КП3", "name": "КП1-10б", "boards": {"908": ["1054"], "612": ["4091", "", ""], "739": ["6060", "", ""], "649": ["4094", "", ""], "768": ["07018", "", ""], "615": ["6058", "", ""], "722": ["6029", "", ""], "769": ["07021", "", ""]}}, {"type": "block", "system": "У28 - КП3", "name": "КП1-4Б (2шт)", "boards": {"908": ["1110"], "612": ["4164", "4165", ""], "739": ["6273", "5065", ""], "649": ["5013", "5014", ""], "768": ["07041", "07042", ""], "615": ["4046", "4047", ""], "722": ["6193", "6194", ""], "769": ["07045", "08038", ""]}}, {"type": "block", "system": "У28 - КП3", "name": "КП1-7Б", "boards": {"908": ["1062"], "612": ["4080", "", ""], "739": ["8413", "", ""], "649": ["5006", "", ""], "768": ["07026", "", ""], "615": ["4027", "", ""], "722": ["92014", "", ""], "769": ["07014", "", ""]}}, {"type": "system", "system": "Световые табло", "name": "Световые табло"}, {"type": "system", "system": "КП-2В", "name": "КП-2В"}, {"type": "block", "system": "КП-2В", "name": "КП2-30", "boards": {"908": ["0192"], "612": ["0392", "", ""], "739": ["0463", "", ""], "649": ["0401", "", ""], "768": ["1083", "", ""], "615": ["0349", "", ""], "722": ["1035", "", ""], "769": ["1084", "", ""]}}, {"type": "block", "system": "КП-2В", "name": "УП12-МК", "boards": {"908": ["0347"], "612": ["2971", "", ""], "739": ["782", "", ""], "649": ["1773", "", ""], "768": ["1767", "", ""], "615": ["7407", "", ""], "722": ["611", "", ""], "769": ["1767", "", ""]}}, {"type": "block", "system": "КП-2В", "name": "ВС37-2М", "boards": {"908": ["0399"], "612": ["-", "", ""], "739": ["0409", "", ""], "768": ["0171", "", ""], "615": ["9520", "", ""], "722": ["0356", "", ""], "769": ["0409", "", ""]}}, {"type": "block", "system": "КП-2В", "name": "БС1-3К", "boards": {"908": ["0019"], "612": ["0136", "", ""], "739": ["0410", "", ""], "649": ["7446", "", ""], "768": ["0392", "", ""], "615": ["783", "", ""], "722": ["0184", "", ""], "769": ["1458", "", ""]}}, {"type": "system", "system": "ВЧГ", "name": "ВЧГ"}, {"type": "block", "system": "ВЧГ", "name": "УП", "boards": {"908": ["0109"], "612": ["0413", "", ""], "739": ["0492", "", ""], "649": ["0423", "", ""], "768": ["0106", "", ""], "615": ["7625", "", ""], "722": ["0048", "", ""], "769": ["0101", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-47", "boards": {"908": ["0193"], "612": ["1556", "", ""], "739": ["0504", "", ""], "649": ["2916", "", ""], "768": ["0348", "", ""], "615": ["0049", "", ""], "722": ["1566", "", ""], "769": ["1301", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-4А", "boards": {"908": ["1070"], "612": ["4076", "", ""], "739": ["4018", "", ""], "649": ["08080", "", ""], "768": ["07047", "", ""], "615": ["5019", "", ""], "722": ["6084", "", ""], "769": ["07024", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "ИКО", "boards": {"908": ["1030"], "612": ["0138", "", ""], "739": ["5099", "", ""], "649": ["07006", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "ИВР", "boards": {"908": ["2053"], "612": ["4078", "", ""], "739": ["6096", "", ""], "649": ["5010", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-21", "boards": {"908": ["0368"], "612": ["0467", "", ""], "739": ["0737", "", ""], "649": ["0738", "", ""], "768": ["0610", "", ""], "615": ["0116", "", ""], "722": ["0837", "", ""], "769": ["0611", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-4АПУ", "boards": {"739": ["4020", "", ""], "649": ["09003", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-11А", "boards": {"908": ["1061"], "612": ["07025", "", ""], "739": ["07007", "", ""], "649": ["5004", "", ""], "768": ["07040", "", ""], "615": ["8518", "", ""], "722": ["07003", "", ""], "769": ["07039", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-12А", "boards": {"908": ["0249"], "612": ["0413", "", ""], "739": ["1552", "", ""], "649": ["0417", "", ""], "768": ["0733", "", ""], "615": ["0374", "", ""], "722": ["1513", "", ""], "769": ["0763", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-33", "boards": {"908": ["0515"], "612": ["4213", "", ""], "739": ["6818", "", ""], "649": ["5132", "", ""], "768": ["07411", "", ""], "615": ["1332", "", ""], "722": ["6514", "", ""], "769": ["07316", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-10Б (2 шт.)", "boards": {"908": ["1219"], "612": ["6919", "3633", ""], "739": ["7114", "7113", ""], "649": ["4117", "4216", ""], "768": ["07714", "07811", ""], "615": ["2636", "1634", ""], "722": ["6739", "6913", ""], "769": ["07615", "07617", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-48В", "boards": {"908": ["2156"], "612": ["4019", "", ""], "739": ["152", "", ""], "649": ["4013", "", ""], "768": ["133", "", ""], "615": ["0621", "", ""], "722": ["6711", "", ""], "769": ["07418", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-34А", "boards": {"908": ["0271"], "612": ["0405", "", ""], "739": ["1144", "", ""], "649": ["0409", "", ""], "768": ["0701", "", ""], "615": ["2922", "", ""], "722": ["1049", "", ""], "769": ["0730", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-701", "boards": {"908": ["0201"], "612": ["0452", "", ""], "739": ["1157", "", ""], "649": ["0423", "", ""], "768": ["0771", "", ""], "615": ["0384", "", ""], "722": ["1039", "", ""], "769": ["0710", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-8 и", "boards": {"908": ["0272"], "612": ["0405", "", ""], "739": ["1037", "", ""], "649": ["0465", "", ""], "768": ["0790", "", ""], "615": ["0421", "", ""], "722": ["1039", "", ""], "769": ["0740", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-8 г", "boards": {"908": ["0212"], "612": ["0492", "", ""], "739": ["1166", "", ""], "649": ["0463", "", ""], "768": ["0702", "", ""], "615": ["0360", "", ""], "722": ["1046", "", ""], "769": ["0417", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-8 е", "boards": {"908": ["0940"], "612": ["0771", "", ""], "739": ["1167", "", ""], "649": ["0019", "", ""], "768": ["0732", "", ""], "615": ["0926", "", ""], "722": ["9501", "", ""], "769": ["0553", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-8 ж", "boards": {"908": ["0232"], "612": ["0454", "", ""], "739": ["1167", "", ""], "649": ["0415", "", ""], "768": ["0721", "", ""], "615": ["0380", "", ""], "722": ["1037", "", ""], "769": ["0751", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-8 з", "boards": {"908": ["0955"], "612": ["1156", "", ""], "739": ["1166", "", ""], "649": ["0787", "", ""], "768": ["0741", "", ""], "615": ["0133", "", ""], "722": ["1146", "", ""], "769": ["0492", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-8 к", "boards": {"908": ["0333"], "612": ["0790", "", ""], "739": ["1166", "", ""], "649": ["0707", "", ""], "768": ["0472", "", ""], "615": ["1069", "", ""], "722": ["1059", "", ""], "769": ["0582", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-8 л", "boards": {"908": ["0291"], "612": ["1158", "", ""], "739": ["1039", "", ""], "649": ["0042", "", ""], "768": ["0790", "", ""], "615": ["0904", "", ""], "722": ["1167", "", ""], "769": ["0771", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-8 м", "boards": {"908": ["0131"], "612": ["0493", "", ""], "739": ["1156", "", ""], "649": ["1120", "", ""], "768": ["0760", "", ""], "615": ["0112", "", ""], "722": ["422020", "", ""], "769": ["0160", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-20 (2 шт.)", "boards": {"908": ["0121"], "612": ["0842", "0832", ""], "739": ["1652", "1662", ""], "649": ["0805", "0854", ""], "768": ["0672", "0643", ""], "615": ["0793", "0714", ""], "722": ["1259", "0742", ""], "769": ["0671", "1615", ""]}}, {"type": "block", "system": "ВЧГ", "name": "2КП2-20А", "boards": {"908": ["0053"], "612": ["0462", "", ""], "739": ["1150", "", ""], "649": ["0081", "", ""], "768": ["0702", "", ""], "615": ["0346", "", ""], "722": ["1040", "", ""], "769": ["0761", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "УК", "boards": {"908": ["0266"], "612": ["0471", "", ""], "739": ["1153", "", ""], "649": ["0442", "", ""], "768": ["1048", "", ""], "615": ["0370", "", ""], "722": ["1028", "", ""], "769": ["0771", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-6А", "boards": {"908": ["1053"], "612": ["5081", "", ""], "739": ["6067", "", ""], "649": ["8117", "", ""], "768": ["07023", "", ""], "615": ["6050", "", ""], "722": ["6100", "", ""], "769": ["5043", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-7-0", "boards": {"908": ["1038"], "612": ["0427", "", ""], "739": ["1137", "", ""], "649": ["0428", "", ""], "768": ["0711", "", ""], "615": ["0432", "", ""], "722": ["1039", "", ""], "769": ["0730", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-51", "boards": {"908": ["0235"], "612": ["0506", "", ""], "739": ["1164", "", ""], "649": ["0023", "", ""], "768": ["0741", "", ""], "615": ["0257", "", ""], "722": ["1059", "", ""], "769": ["0760", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "ФНЧ", "boards": {"908": ["1059"], "612": ["4056", "", ""], "739": ["6079", "", ""], "649": ["4073", "", ""], "768": ["07020", "", ""], "615": ["4013", "", ""], "722": ["6055", "", ""], "769": ["07030", "", ""]}}, {"type": "block", "system": "ВЧГ", "name": "КП2-1", "boards": {"908": ["4005"], "612": ["5017", "", ""], "739": ["б/н", "", ""], "649": ["5907", "", ""], "791": ["6020", "", ""], "768": ["5901", "", ""], "615": ["5905", "", ""], "722": ["5714", "", ""], "769": ["6020", "", ""]}}, {"type": "system", "system": "Редуктор азимута", "name": "Редуктор азимута"}, {"type": "system", "system": "Редуктор тангажа", "name": "Редуктор тангажа"}, {"type": "block", "system": "Редуктор тангажа", "name": "КП2А-17", "boards": {"908": ["1088"], "612": ["4156", "", ""], "739": ["6112", "", ""], "768": ["07023", "", ""], "615": ["4043", "", ""], "722": ["6060", "", ""], "769": ["07038", "", ""]}}, {"type": "system", "system": "КП-3А", "name": "КП-3А"}, {"type": "block", "system": "КП-3А", "name": "6ЭМ-2М", "boards": {"908": ["899"], "612": ["549", "", ""], "739": ["324", "", ""], "649": ["ЕВ-112", "", ""], "768": ["402", "", ""], "615": ["4168/709", "", ""], "722": ["626", "", ""], "769": ["333", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "2ЭМ-3", "boards": {"908": ["898"], "612": ["684", "", ""], "739": ["264", "", ""], "649": ["233", "", ""], "768": ["724", "", ""], "615": ["1473/678", "", ""], "722": ["334", "", ""], "769": ["ЕВ-82", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "2НВ-5", "boards": {"908": ["806"], "612": ["592", "", ""], "739": ["923", "", ""], "649": ["784", "", ""], "768": ["834", "", ""], "615": ["741", "", ""], "722": ["1023", "", ""], "769": ["413", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "2НВ-5А", "boards": {"908": ["159"], "612": ["629", "", ""], "739": ["512", "", ""], "649": ["793", "", ""], "768": ["603", "", ""], "615": ["321", "", ""], "722": ["294", "", ""], "769": ["849", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "6ЭМ-8", "boards": {"908": ["ЕВ-146"], "612": ["748", "", ""], "739": ["232", "", ""], "649": ["ЕВ-96", "", ""], "768": ["549", "", ""], "615": ["3040/867", "", ""], "722": ["ЕВ-194", "", ""], "769": ["731", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "6ЭМ-14", "boards": {"908": ["2934"], "612": ["549", "", ""], "739": ["719", "", ""], "649": ["565", "", ""], "768": ["684", "", ""], "615": ["2333/476", "", ""], "722": ["683", "", ""], "769": ["748", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "КП3-28А", "boards": {"908": ["653"], "612": ["613", "", ""], "739": ["280", "", ""], "649": ["665", "", ""], "768": ["686", "", ""], "615": ["618", "", ""], "722": ["821", "", ""], "769": ["849", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "КП3-3", "boards": {"908": ["840"], "612": ["497", "", ""], "739": ["371", "", ""], "649": ["652", "", ""], "768": ["675", "", ""], "615": ["649", "", ""], "722": ["812", "", ""], "769": ["890", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "КП3-17А", "boards": {"908": ["840"], "612": ["549", "", ""], "739": ["441", "", ""], "649": ["287", "", ""], "768": ["731", "", ""], "615": ["628", "", ""], "722": ["733", "", ""], "769": ["363", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "2НВ-10 (2шт.)", "boards": {"908": ["2623"], "612": ["549", "549", ""], "739": ["719", "719", ""], "649": ["565", "565", ""], "768": ["731", "731", ""], "615": ["2737", "2719", ""], "722": ["3491", "683", ""], "769": ["748", "748", ""]}}, {"type": "block", "system": "КП-3А", "name": "2НВ-4А (2шт.)", "boards": {"908": ["647"], "612": ["1013", "1020", ""], "739": ["1361", "1359", ""], "649": ["1038", "1048", ""], "768": ["1396", "1400", ""], "615": ["689", "738", ""], "722": ["1282", "1287", ""], "769": ["1431", "1437", ""]}}, {"type": "block", "system": "КП-3А", "name": "2НВ-10Б", "boards": {"908": ["1127"], "612": ["549", "", ""], "739": ["719", "", ""], "649": ["565", "", ""], "768": ["726", "", ""], "615": ["1289/476", "", ""], "722": ["683", "", ""], "769": ["748", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "2НВ-10В", "boards": {"908": ["329"], "612": ["527", "", ""], "739": ["б/н", "", ""], "649": ["553", "", ""], "768": ["712", "", ""], "615": ["495", "", ""], "722": ["671", "", ""], "769": ["737", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "2НВ-10А", "boards": {"908": ["2393"], "612": ["873", "", ""], "739": ["719", "", ""], "649": ["565", "", ""], "768": ["731", "", ""], "615": ["2563/476", "", ""], "722": ["683", "", ""], "769": ["748", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "КП3-10", "boards": {"908": ["374"], "612": ["502", "", ""], "739": ["582", "", ""], "649": ["683", "", ""], "768": ["669", "", ""], "615": ["446", "", ""], "722": ["617", "", ""], "769": ["678", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "НВ-Ф2", "boards": {"908": ["322"], "612": ["549", "", ""], "739": ["719", "", ""], "649": ["565", "", ""], "768": ["731", "", ""], "615": ["654/476", "", ""], "722": ["733", "", ""], "769": ["748", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "6ЭМ-1Б", "boards": {"908": ["274"], "612": ["674", "", ""], "739": ["755", "", ""], "649": ["107", "", ""], "768": ["767", "", ""], "615": ["331", "", ""], "722": ["725", "", ""], "769": ["782", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "КП3-32А", "boards": {"908": ["811105"], "612": ["841105", "", ""], "739": ["861009", "", ""], "649": ["850201", "", ""], "768": ["861203", "", ""], "615": ["840405", "", ""], "722": ["860307", "", ""], "769": ["870206", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "КП3-47", "boards": {"908": ["811105"], "612": ["841107", "", ""], "739": ["861005", "", ""], "649": ["850101", "", ""], "768": ["861130", "", ""], "615": ["840402", "", ""], "722": ["860202", "", ""], "769": ["870103", "", ""]}}, {"type": "block", "system": "КП-3А", "name": "Узел реверса", "boards": {}}, {"type": "block", "system": "КП-3А", "name": "ВЧ фильтр", "boards": {"908": ["322"], "612": ["117", "", ""], "739": ["273", "", ""], "649": ["155", "", ""], "768": ["287", "", ""], "615": ["93", "", ""], "722": ["251", "", ""], "769": ["292", "", ""]}}, {"type": "system", "system": "ДИСС-013-С2М", "name": "ДИСС-013-С2М"}, {"type": "block", "system": "ДИСС-013-С2М", "name": "Блок ВЧ", "boards": {"908": ["00340"], "612": ["30515", "", ""], "739": ["60093", "", ""], "649": ["80036", "", ""], "768": ["60111", "", ""], "615": ["70178", "", ""], "722": ["50454", "", ""], "769": ["70326", "", ""]}}, {"type": "block", "system": "ДИСС-013-С2М", "name": "Рама БС-3М", "boards": {"908": ["90185"], "612": ["50025", "", ""], "739": ["60098", "", ""], "649": ["40106", "", ""], "768": ["70055", "", ""], "615": ["4008", "", ""], "722": ["50111", "", ""], "769": ["70074", "", ""]}}, {"type": "block", "system": "ДИСС-013-С2М", "name": "Блок НЧ", "boards": {"908": ["80334А"], "612": ["60197", "", ""], "739": ["70080", "", ""], "649": ["20315А", "", ""], "768": ["50401", "", ""], "615": ["80232", "", ""], "722": ["50018А", "", ""], "769": ["70068", "", ""]}}, {"type": "block", "system": "ДИСС-013-С2М", "name": "БС-3М", "boards": {"908": ["60122"], "612": ["50005", "", ""], "739": ["00021", "", ""], "649": ["70051", "", ""], "768": ["50139", "", ""], "615": ["60087", "", ""], "722": ["90203", "", ""], "769": ["10023", "", ""]}}, {"type": "block", "system": "ДИСС-013-С2М", "name": "ИП 2/1", "boards": {"908": ["80468"], "612": ["00317", "", ""], "739": ["80503", "", ""], "649": ["00435", "", ""], "768": ["70083", "", ""], "615": ["90134", "", ""], "722": ["90356", "", ""], "769": ["70081", "", ""]}}, {"type": "system", "system": "К-II-76", "name": "К-II-76"}, {"type": "block", "system": "К-II-76", "name": "К-II-25", "boards": {"908": ["1031"], "612": ["4035", "", ""], "739": ["6059", "", ""], "649": ["5005", "", ""], "768": ["07015", "", ""], "615": ["?", "", ""], "722": ["6045", "", ""], "769": ["6046", "", ""]}}, {"type": "block", "system": "К-II-76", "name": "К17В", "boards": {"908": ["1036"], "612": ["4066", "", ""], "739": ["6036", "", ""], "649": ["5004", "", ""], "768": ["07026", "", ""], "615": ["4013", "", ""], "722": ["6048", "", ""], "769": ["07037", "", ""]}}, {"type": "block", "system": "К-II-76", "name": "К-17Л", "boards": {"908": ["-"], "612": ["-", "", ""], "739": ["6054", "", ""], "649": ["-", "", ""], "768": ["07014", "", ""], "615": ["-", "", ""], "722": ["6025", "", ""], "769": ["07008", "", ""]}}, {"type": "system", "system": "КП7", "name": "КП7"}, {"type": "block", "system": "КП7", "name": "КП7-34", "boards": {"908": ["08106"], "612": ["467", "", ""], "739": ["658", "", ""], "768": ["707", "", ""], "615": ["429", "", ""], "722": ["618", "", ""], "769": ["709", "", ""]}}, {"type": "block", "system": "КП7", "name": "КП7-801", "boards": {"908": ["12801"], "612": ["465", "", ""], "739": ["654", "", ""], "649": ["472", "", ""], "768": ["673", "", ""], "615": ["05106", "", ""], "722": ["609", "", ""], "769": ["705", "", ""]}}, {"type": "block", "system": "КП7", "name": "КП7-14", "boards": {"908": ["09104"], "612": ["463", "", ""], "739": ["657", "", ""], "649": ["469", "", ""], "768": ["705", "", ""], "615": ["425", "", ""], "722": ["617", "", ""], "769": ["706", "", ""]}}, {"type": "block", "system": "КП7", "name": "КП7-14А", "boards": {"908": ["09110"], "612": ["459", "", ""], "739": ["656", "", ""], "649": ["467", "", ""], "768": ["705", "", ""], "615": ["420", "", ""], "722": ["616", "", ""], "769": ["706", "", ""]}}, {"type": "block", "system": "КП7", "name": "КП7-25", "boards": {"908": ["09105"], "612": ["465", "", ""], "739": ["660", "", ""], "649": ["460", "", ""], "768": ["704", "", ""], "615": ["427", "", ""], "722": ["666", "", ""], "769": ["706", "", ""]}}, {"type": "block", "system": "КП7", "name": "КП7-46", "boards": {"908": ["09106"], "612": ["466", "", ""], "739": ["658", "", ""], "649": ["806", "", ""], "768": ["701", "", ""], "615": ["429", "", ""], "722": ["617", "", ""], "769": ["11501", "", ""]}}, {"type": "block", "system": "КП7", "name": "КП7-17", "boards": {"908": ["09129"], "612": ["5331", "5332", "5333"], "739": ["6679", "6685", "6696"], "649": ["5367", "5370", "5371"], "768": ["7023", "7024", "7025"], "615": ["5151", "5152", "5153"], "722": ["6513", "6514", "6515"], "769": ["7026", "7028", "7029"]}}, {"type": "block", "system": "КП7", "name": "КП7-17", "boards": {"908": ["10102"], "612": ["5335", "5336", ""], "739": ["6698", "6697", ""], "649": ["5372", "5374", ""], "768": ["7027", "7047", ""], "615": ["5154", "5155", ""], "722": ["6516", "6518", ""], "769": ["7049", "7050", ""]}}, {"type": "block", "system": "КП7", "name": "КП2А-17", "boards": {"908": ["1087"], "612": ["4172", "", ""], "739": ["6159", "", ""], "649": ["5006", "", ""], "768": ["07011", "", ""], "615": ["4048", "", ""], "722": ["6090", "", ""], "769": ["07037", "", ""]}}, {"type": "system", "system": "КП4", "name": "КП4"}, {"type": "block", "system": "КП4", "name": "КЛ6-00", "boards": {"908": ["34193"], "612": ["31688", "", ""], "739": ["12642", "", ""], "649": ["42050", "", ""], "768": ["90868", "", ""], "615": ["43438", "", ""], "722": ["75291", "", ""], "769": ["60530", "", ""]}}, {"type": "block", "system": "КП4", "name": "КЛ2-00", "boards": {"908": ["90237"], "612": ["80318", "", ""], "739": ["60236", "", ""], "649": ["90212", "", ""], "768": ["60217", "", ""], "615": ["40135", "", ""], "722": ["60265", "", ""], "769": ["10166", "", ""]}}, {"type": "block", "system": "КП4", "name": "КЛ3-00А", "boards": {"908": ["60285"], "612": ["60195", "", ""], "739": ["60257", "", ""], "649": ["60278", "", ""], "768": ["50217", "", ""], "615": ["60187", "", ""], "722": ["40139", "", ""], "769": ["60137", "", ""]}}, {"type": "block", "system": "КП4", "name": "КЛ1-00 (2 шт.)", "boards": {"908": ["10309"], "612": ["40172", "40260", ""], "739": ["60382", "60353", ""], "649": ["40274", "40298", ""], "768": ["60449", "60296", ""], "615": ["40149", "40164", ""], "722": ["60105", "60123", ""], "769": ["70130", "60475", ""]}}, {"type": "block", "system": "КП4", "name": "Приёмник КЛ-3а", "boards": {"908": ["70202"], "612": ["60779", "", ""], "739": ["88662", "", ""], "649": ["64786", "", ""], "768": ["26076", "", ""], "615": ["80232", "", ""], "722": ["50178", "", ""], "769": ["62794", "", ""]}}, {"type": "system", "system": "С3М", "name": "С3М"}, {"type": "block", "system": "С3М", "name": "С3М-3М", "boards": {"908": ["?"], "612": ["114125", "", ""], "739": ["066691", "", ""], "649": ["3В028", "", ""], "768": ["027936", "", ""], "615": ["069202", "", ""], "722": ["3В028", "", ""], "769": ["129109", "", ""]}}, {"type": "block", "system": "С3М", "name": "С3М-10", "boards": {"908": ["?"], "612": ["114125", "", ""], "739": ["066691", "", ""], "649": ["094032", "", ""], "768": ["027936", "", ""], "615": ["113434", "", ""], "722": ["056658", "", ""], "769": ["027935", "", ""]}}, {"type": "block", "system": "С3М", "name": "С3М-4А", "boards": {"908": ["?"], "612": ["114125", "", ""], "739": ["066691", "", ""], "649": ["129010", "", ""], "768": ["027936", "", ""], "615": ["113434", "", ""], "722": ["056658", "", ""], "769": ["027935", "", ""]}}, {"type": "block", "system": "С3М", "name": "С3М-12", "boards": {"908": ["100358"], "612": ["094581", "", ""], "739": ["056655", "", ""], "768": ["017801", "", ""], "769": ["076696", "", ""]}}, {"type": "system", "system": "С3М-9М", "name": "С3М-9М"}, {"type": "block", "system": "С3М-9М", "name": "С3М-5Б", "boards": {"908": ["120870"], "612": ["114125", "", ""], "739": ["066691", "", ""], "649": ["094032", "", ""], "768": ["027936", "", ""], "615": ["113434", "", ""], "722": ["056658", "", ""], "769": ["027935", "", ""]}}, {"type": "system", "system": "А-817", "name": "А-817"}, {"type": "system", "system": "ЮГ-01", "name": "ЮГ-01"}, {"type": "block", "system": "ЮГ-01", "name": "Рама монтажная", "boards": {"649": ["2444", "", ""]}}, {"type": "system", "system": "С1.4", "name": "С1.4"}, {"type": "system", "system": "С1.8", "name": "С1.8"}, {"type": "system", "system": "С1.7", "name": "С1.7"}], "faults": [{"date": "12.10.2026", "when": "после командировки", "board": "612", "system": "КП-2В", "symptom": "Нет тока магнетрона", "remedy": "Замена УП12-МК", "serial": "2971", "kun": "+"}, {"date": "12.10.2026", "when": "после командировки", "board": "612", "system": "КП-3А", "symptom": "Горят предохранители +250В Ст.1/Ст.2 на 6ЭМ-8", "remedy": "Замена 2НВ-10А", "serial": "748", "kun": "+"}, {"date": "26.10.2026", "when": "предполетная", "board": "768", "system": "КП-2В", "symptom": "Запах гари", "remedy": "Замена КП2-4А", "serial": "07047 (6040)", "kun": "+"}, {"date": "27.10.2026", "when": "после командировки", "board": "768", "system": "КП-2В", "symptom": "Отсутствует Uпит=+5В на КП2-12А", "remedy": "Замена КП2-8л", "serial": "0221", "kun": "+"}, {"date": "12.10.2026", "when": "после командировки", "board": "612", "system": "КП-1Д", "symptom": "Отказ канала связи УВК с А-711", "remedy": "Замена КП1-10М", "serial": "6040А", "kun": "+"}, {"date": "19.11.2026", "when": "после командировки", "board": "739", "system": "КП-2В", "symptom": "Сгорают предохранители на 5А по линии 200В на бл. УК", "remedy": "Замена редуктора крена", "serial": "66-9", "kun": ""}, {"date": "19.11.2026", "when": "после командировки", "board": "739", "system": "КП-1Д", "symptom": "Отказ питания УВК", "remedy": "Замена КП1-801", "serial": "07080", "kun": ""}, {"date": "19.11 26", "when": "после командировки", "board": "612", "system": "ДИСС", "symptom": "Уходит в память в полёте", "remedy": "Замена блока ВЧ", "serial": "30515", "kun": ""}, {"date": "19.11.2026", "when": "после командировки", "board": "612", "system": "КП-3А", "symptom": "Не происходит захват токов АПЧ и УПЧ, только в резерве синхронизации и в ррч", "remedy": "Замена 6ЭМ-2М", "serial": "ЕВ-112", "kun": ""}, {"date": "19.11.2026", "when": "после командировки", "board": "612", "system": "КП-1Д", "symptom": "Отказ канала связи УВК с РСБН", "remedy": "Замена КП1-7Б", "serial": "4080", "kun": ""}, {"date": ".11.26", "when": "после командировки", "board": "739", "system": "КП-2В", "symptom": "Сгорают предохранители на 5А по линии 200В на бл. УК", "remedy": "", "serial": "", "kun": ""}, {"date": ".11.26", "when": "после командировки", "board": "739", "system": "КП-2В", "symptom": "При низкой яркости на ИКО секторение каждые 4-6 градусов", "remedy": "", "serial": "", "kun": ""}], "workTitle": "Замена силикагеля", "workBoards": ["739", "768", "649"], "workRows": [{"block": "ГМ-А-04", "boards": {"739": "8257", "768": "9060", "649": "9857"}}, {"block": "КП1-45А", "boards": {"739": "0867", "768": "0661", "649": "0155"}}, {"block": "УП12-МК", "boards": {"739": "1777", "768": "782", "649": "7439"}}]};
+
+    const APP = {
       user: null,
       canEdit: false,
       userName: '',
-      systems: [],
-      blocks: [],
-      aircrafts: [],
-      aircraftBlocks: [],
-      locations: [],
-      locationItems: [],
-      serialFlags: [],
-      serialComments: [],
-      passportBlocks: [],
-      faultLogs: [],
-      changeHistory: []
+      boards: [],
+      boardSlots: {},
+      statusColumns: [],
+      actualRows: [],
+      nativeRows: [],
+      faults: [],
+      workTitle: 'Работы',
+      workBoards: [],
+      workRows: [],
+      history: []
     };
 
     function showAuthError(msg) {
@@ -623,15 +573,15 @@
       box.style.display = 'block';
     }
 
-    function showAuthScreen(errorMsg = '') {
+    function showAuthScreen(msg = '') {
       document.getElementById('authScreen').style.display = 'flex';
       document.getElementById('mainApp').style.display = 'none';
-      showAuthError(errorMsg);
+      showAuthError(msg);
     }
 
-    function applyRolePermissions() {
+    function applyRole() {
       const badge = document.getElementById('roleBadge');
-      if (STATE.canEdit) {
+      if (APP.canEdit) {
         badge.textContent = 'Редактор';
         badge.classList.remove('readonly');
       } else {
@@ -639,39 +589,429 @@
         badge.classList.add('readonly');
       }
       document.querySelectorAll('.editor-only').forEach(el => {
-        el.classList.toggle('hidden', !STATE.canEdit);
+        el.classList.toggle('hidden', !APP.canEdit);
       });
     }
 
-    async function initAuthorizedApp(user) {
-      STATE.user = user;
-      const { data: roleRow, error: roleErr } = await sb
-        .from('user_roles')
-        .select('role, display_name')
-        .eq('email', user.email)
-        .maybeSingle();
+    function cloneSeed() {
+      return JSON.parse(JSON.stringify(EXCEL_SEED));
+    }
 
-      if (roleErr) {
-        await sb.auth.signOut();
-        showAuthScreen('Ошибка проверки прав в user_roles: ' + roleErr.message);
-        return;
+    async function loadAppState() {
+      const seed = cloneSeed();
+      APP.boards = seed.boards;
+      APP.boardSlots = seed.boardSlots;
+      APP.statusColumns = seed.statusColumns;
+      APP.actualRows = seed.actualRows;
+      APP.nativeRows = seed.nativeRows;
+      APP.faults = seed.faults;
+      APP.workTitle = seed.workTitle;
+      APP.workBoards = seed.workBoards;
+      APP.workRows = seed.workRows;
+
+      // Пытаемся подтянуть сохранённые изменения из Supabase (если таблицы созданы и заполнены)
+      try {
+        const [acRes, abRes, locRes, locItRes, fRes, hRes] = await Promise.all([
+          sb.from('aircrafts').select('*').order('id'),
+          sb.from('aircraft_blocks').select('*').order('id'),
+          sb.from('locations').select('*').order('id'),
+          sb.from('location_items').select('*').order('id'),
+          sb.from('fault_logs').select('*').order('id', { ascending: false }).limit(200),
+          sb.from('change_history').select('*').order('changed_at', { ascending: false }).limit(200)
+        ]);
+
+        if (Array.isArray(acRes.data) && acRes.data.length > 0) {
+          const dbBoards = acRes.data.map(a => String(a.board_number || '').trim()).filter(Boolean);
+          if (dbBoards.length) {
+            dbBoards.forEach(b => {
+              if (!APP.boards.includes(b)) {
+                APP.boards.push(b);
+                APP.boardSlots[b] = 1;
+              }
+            });
+          }
+        }
+
+        if (Array.isArray(fRes.data) && fRes.data.length > 0) {
+          APP.faults = fRes.data.map(row => ({
+            date: row.fault_date || '',
+            when: row.when_found || '',
+            board: row.board_number || '',
+            system: row.system_name || '',
+            symptom: row.symptom || '',
+            remedy: row.remedy || '',
+            serial: row.failed_serial || '',
+            kun: row.kun || ''
+          })).concat(APP.faults);
+        }
+
+        if (Array.isArray(hRes.data)) {
+          APP.history = hRes.data;
+        }
+      } catch (e) {
+        // Если какие-то таблицы ещё не созданы — работаем на данных из таблицы без падения
       }
 
-      if (!roleRow) {
+      const blockCount = APP.actualRows.filter(r => r.type === 'block').length;
+      document.getElementById('statsLabel').textContent =
+        `Бортов: ${APP.boards.length} • Блоков: ${blockCount} • Статусов/мест: ${APP.statusColumns.length}`;
+
+      renderSheet1();
+      renderNative();
+      renderFaults();
+      renderWorks();
+      renderGlobalSearch();
+      renderHistory();
+    }
+
+    async function pushHistory(targetLabel, oldVal, newVal) {
+      APP.history.unshift({
+        changed_at: new Date().toISOString(),
+        changed_by: APP.userName || APP.user?.email || 'user',
+        target_label: targetLabel,
+        old_value: String(oldVal ?? ''),
+        new_value: String(newVal ?? '')
+      });
+      renderHistory();
+      if (!APP.canEdit) return;
+      try {
+        await sb.from('change_history').insert({
+          target_label: targetLabel,
+          old_value: String(oldVal ?? ''),
+          new_value: String(newVal ?? ''),
+          changed_by: APP.userName || APP.user?.email || 'user'
+        });
+      } catch (e) {}
+    }
+
+    function getStatusCellClass(colLabel, val) {
+      const l = (colLabel || '').toLowerCase();
+      const v = (val || '').trim().toLowerCase();
+      if (v === 'неиспр' || l.includes('неисправн') || l.includes('неисправно')) return 'c-fault';
+      if (v === '?' || l.includes('?')) return 'c-quest';
+      if (l.includes('тэч')) return 'c-tech';
+      if (l.includes('форма 8')) return 'c-form8';
+      if (l.includes('го пнк')) return 'c-gopnk';
+      return '';
+    }
+
+    function isDupException(blockName, val) {
+      const clean = (val || '').trim().toUpperCase();
+      if (!clean || ['+', '-', 'НЕИСПР', 'Б/Н', '?'].includes(clean)) return true;
+      const bUp = (blockName || '').toUpperCase();
+      return bUp.includes('2НВ-10') || bUp.includes('КП7-17');
+    }
+
+    function renderSheet1() {
+      const fBlock = (document.getElementById('filterBlockInput').value || '').trim().toLowerCase();
+      const fBoard = (document.getElementById('filterBoardInput').value || '').trim().toLowerCase();
+
+      const visibleBoards = APP.boards.filter(b => !fBoard || b.toLowerCase().includes(fBoard));
+
+      // Подсчёт повторяющихся серийных номеров по строкам/блокам
+      const counts = {};
+      APP.actualRows.forEach(r => {
+        if (r.type !== 'block') return;
+        Object.values(r.boards || {}).forEach(arr => {
+          (arr || []).forEach(v => {
+            const clean = (v || '').trim().toLowerCase();
+            if (!clean || ['+', '-', 'неиспр', 'б/н', '?'].includes(clean)) return;
+            const key = `${r.name.toLowerCase()}::${clean}`;
+            counts[key] = (counts[key] || 0) + 1;
+          });
+        });
+      });
+
+      let headCols = `<th class="sticky-col">Система/Борт</th>`;
+      visibleBoards.forEach(b => {
+        const slots = APP.boardSlots[b] || 1;
+        if (slots === 1) {
+          headCols += `<th>${b}</th>`;
+        } else {
+          for (let s = 1; s <= slots; s++) {
+            headCols += `<th>${b} (${s})</th>`;
+          }
+        }
+      });
+      APP.statusColumns.forEach(sc => {
+        headCols += `<th>${sc}</th>`;
+      });
+
+      const totalCols = 1 + visibleBoards.reduce((sum, b) => sum + (APP.boardSlots[b] || 1), 0) + APP.statusColumns.length;
+
+      let bodyHtml = '';
+      let curSys = 'Общее';
+      let sysBuffer = [];
+
+      function flushSystem(sysName, rowsArr) {
+        const blockRows = rowsArr.filter(x => x.type === 'block');
+        const matchedBlocks = blockRows.filter(
+          x => !fBlock || x.name.toLowerCase().includes(fBlock) || sysName.toLowerCase().includes(fBlock)
+        );
+        if (fBlock && matchedBlocks.length === 0) return;
+
+        bodyHtml += `<tr class="sys-row"><td class="sticky-col" colspan="${totalCols}">${sysName}</td></tr>`;
+
+        (fBlock ? matchedBlocks : blockRows).forEach(row => {
+          bodyHtml += `<tr><td class="sticky-col" title="${row.name}">${row.name}</td>`;
+
+          visibleBoards.forEach(b => {
+            const slots = APP.boardSlots[b] || 1;
+            const vals = (row.boards && row.boards[b]) || [];
+            for (let s = 0; s < slots; s++) {
+              const v = vals[s] || '';
+              const clean = v.trim().toLowerCase();
+              const isDup = clean && !isDupException(row.name, v) && counts[`${row.name.toLowerCase()}::${clean}`] > 1;
+              const vLower = v.trim().toLowerCase();
+              const cls = [
+                vLower === 'неиспр' ? 'c-fault' : '',
+                v.trim() === '?' ? 'c-quest' : '',
+                isDup ? 'c-dup' : ''
+              ].filter(Boolean).join(' ');
+
+              if (APP.canEdit) {
+                bodyHtml += `<td class="${cls}"><input type="text" class="cell-edit s1-board-cell" value="${v.replace(/"/g, '&quot;')}" data-block="${row.name.replace(/"/g, '&quot;')}" data-board="${b}" data-slot="${s}" data-orig="${v.replace(/"/g, '&quot;')}"></td>`;
+              } else {
+                bodyHtml += `<td class="${cls}">${v}</td>`;
+              }
+            }
+          });
+
+          APP.statusColumns.forEach(sc => {
+            const stArr = (row.statuses && row.statuses[sc]) || [];
+            const valStr = stArr.join(', ');
+            const cls = getStatusCellClass(sc, valStr);
+            if (APP.canEdit) {
+              bodyHtml += `<td class="${cls}"><input type="text" class="cell-edit s1-status-cell" style="width:82px;" value="${valStr.replace(/"/g, '&quot;')}" data-block="${row.name.replace(/"/g, '&quot;')}" data-col="${sc.replace(/"/g, '&quot;')}" data-orig="${valStr.replace(/"/g, '&quot;')}"></td>`;
+            } else {
+              bodyHtml += `<td class="${cls}">${valStr}</td>`;
+            }
+          });
+
+          bodyHtml += `</tr>`;
+        });
+      }
+
+      APP.actualRows.forEach(r => {
+        if (r.type === 'system') {
+          if (sysBuffer.length) flushSystem(curSys, sysBuffer);
+          curSys = r.name;
+          sysBuffer = [];
+        } else {
+          sysBuffer.push(r);
+        }
+      });
+      if (sysBuffer.length) flushSystem(curSys, sysBuffer);
+
+      document.getElementById('sheet1Table').innerHTML = `<thead><tr>${headCols}</tr></thead><tbody>${bodyHtml}</tbody>`;
+
+      document.querySelectorAll('.s1-board-cell').forEach(inp => {
+        inp.addEventListener('change', async (e) => {
+          const el = e.target;
+          const newVal = el.value.trim();
+          const oldVal = el.dataset.orig || '';
+          if (newVal === oldVal) return;
+          const bName = el.dataset.block;
+          const board = el.dataset.board;
+          const slot = Number(el.dataset.slot);
+          const row = APP.actualRows.find(x => x.type === 'block' && x.name === bName);
+          if (row) {
+            if (!row.boards) row.boards = {};
+            if (!row.boards[board]) row.boards[board] = [];
+            row.boards[board][slot] = newVal;
+          }
+          el.dataset.orig = newVal;
+          await pushHistory(`${bName} / борт ${board}`, oldVal, newVal);
+          renderSheet1();
+        });
+      });
+
+      document.querySelectorAll('.s1-status-cell').forEach(inp => {
+        inp.addEventListener('change', async (e) => {
+          const el = e.target;
+          const newVal = el.value.trim();
+          const oldVal = el.dataset.orig || '';
+          if (newVal === oldVal) return;
+          const bName = el.dataset.block;
+          const col = el.dataset.col;
+          const row = APP.actualRows.find(x => x.type === 'block' && x.name === bName);
+          if (row) {
+            if (!row.statuses) row.statuses = {};
+            row.statuses[col] = newVal ? newVal.split(',').map(s => s.trim()).filter(Boolean) : [];
+          }
+          el.dataset.orig = newVal;
+          await pushHistory(`${bName} / ${col}`, oldVal, newVal);
+          renderSheet1();
+        });
+      });
+    }
+
+    function renderNative() {
+      const q = (document.getElementById('filterNativeInput').value || '').trim().toLowerCase();
+      let head = `<th class="sticky-col">Родные блоки</th>` + APP.boards.map(b => `<th>${b}</th>`).join('');
+      let body = '';
+      let curSys = 'Общее';
+      let buf = [];
+
+      function flushNat(sysName, arr) {
+        const blocks = arr.filter(x => x.type === 'block');
+        const vis = blocks.filter(x => !q || x.name.toLowerCase().includes(q) || sysName.toLowerCase().includes(q));
+        if (q && !vis.length) return;
+        body += `<tr class="sys-row"><td class="sticky-col" colspan="${APP.boards.length + 1}">${sysName}</td></tr>`;
+        (q ? vis : blocks).forEach(r => {
+          body += `<tr><td class="sticky-col">${r.name}</td>`;
+          APP.boards.forEach(b => {
+            const vals = (r.boards && r.boards[b]) || [];
+            body += `<td>${vals.filter(Boolean).join(', ')}</td>`;
+          });
+          body += `</tr>`;
+        });
+      }
+
+      APP.nativeRows.forEach(r => {
+        if (r.type === 'system') {
+          if (buf.length) flushNat(curSys, buf);
+          curSys = r.name;
+          buf = [];
+        } else {
+          buf.push(r);
+        }
+      });
+      if (buf.length) flushNat(curSys, buf);
+
+      document.getElementById('nativeTable').innerHTML = `<thead><tr>${head}</tr></thead><tbody>${body}</tbody>`;
+    }
+
+    function renderFaults() {
+      const head = `<tr>
+        <th>Дата отказа</th>
+        <th>Когда обнаружено</th>
+        <th>Борт</th>
+        <th>Система</th>
+        <th>Внешнее проявление</th>
+        <th>Способ устранения</th>
+        <th>№ отказавшего блока</th>
+        <th>КУН</th>
+      </tr>`;
+      const body = APP.faults.map(f => `
+        <tr>
+          <td>${f.date || ''}</td>
+          <td>${f.when || ''}</td>
+          <td>${f.board || ''}</td>
+          <td>${f.system || ''}</td>
+          <td style="white-space:normal; text-align:left; min-width:220px;">${f.symptom || ''}</td>
+          <td style="white-space:normal; text-align:left; min-width:180px;">${f.remedy || ''}</td>
+          <td>${f.serial || ''}</td>
+          <td>${f.kun || ''}</td>
+        </tr>
+      `).join('');
+      document.getElementById('faultsGridTable').innerHTML = `<thead>${head}</thead><tbody>${body}</tbody>`;
+    }
+
+    function renderWorks() {
+      const head = `<tr><th class="sticky-col">${APP.workTitle}</th>${APP.workBoards.map(b => `<th>${b}</th>`).join('')}</tr>`;
+      const body = APP.workRows.map(r => `
+        <tr>
+          <td class="sticky-col">${r.block}</td>
+          ${APP.workBoards.map(b => `<td>${(r.boards && r.boards[b]) || ''}</td>`).join('')}
+        </tr>
+      `).join('');
+      document.getElementById('worksGridTable').innerHTML = `<thead>${head}</thead><tbody>${body}</tbody>`;
+    }
+
+    function renderGlobalSearch() {
+      const q = (document.getElementById('globalSerialInput').value || '').trim().toLowerCase();
+      const hits = [];
+
+      APP.actualRows.forEach(r => {
+        if (r.type !== 'block') return;
+        Object.entries(r.boards || {}).forEach(([board, arr]) => {
+          (arr || []).forEach(val => {
+            if (!val) return;
+            if (!q || val.toLowerCase().includes(q)) {
+              hits.push({ where: `Борт ${board}`, block: r.name, val });
+            }
+          });
+        });
+        Object.entries(r.statuses || {}).forEach(([col, arr]) => {
+          (arr || []).forEach(val => {
+            if (!val) return;
+            if (!q || val.toLowerCase().includes(q)) {
+              hits.push({ where: col, block: r.name, val });
+            }
+          });
+        });
+      });
+
+      APP.nativeRows.forEach(r => {
+        if (r.type !== 'block') return;
+        Object.entries(r.boards || {}).forEach(([board, arr]) => {
+          (arr || []).forEach(val => {
+            if (!val) return;
+            if (!q || val.toLowerCase().includes(q)) {
+              hits.push({ where: `Родной / Борт ${board}`, block: r.name, val });
+            }
+          });
+        });
+      });
+
+      const head = `<tr><th>Где найден</th><th>Блок</th><th>Зав. № / Значение</th></tr>`;
+      const body = hits.slice(0, 200).map(h => `
+        <tr><td>${h.where}</td><td>${h.block}</td><td>${h.val}</td></tr>
+      `).join('') || `<tr><td colspan="3">Совпадений нет</td></tr>`;
+      document.getElementById('globalSearchTable').innerHTML = `<thead>${head}</thead><tbody>${body}</tbody>`;
+    }
+
+    function renderHistory() {
+      const head = `<tr><th>Время</th><th>Кто изменил</th><th>Объект</th><th>Было</th><th>Стало</th></tr>`;
+      const body = APP.history.map(h => `
+        <tr>
+          <td>${h.changed_at ? new Date(h.changed_at).toLocaleString('ru-RU') : ''}</td>
+          <td>${h.changed_by || ''}</td>
+          <td>${h.target_label || ''}</td>
+          <td>${h.old_value || ''}</td>
+          <td>${h.new_value || ''}</td>
+        </tr>
+      `).join('') || `<tr><td colspan="5">Изменений пока нет</td></tr>`;
+      document.getElementById('historyGridTable').innerHTML = `<thead>${head}</thead><tbody>${body}</tbody>`;
+    }
+
+    async function initAuthorizedApp(user) {
+      APP.user = user;
+      let roleData = null;
+
+      try {
+        const rpcRes = await sb.rpc('get_my_role');
+        if (!rpcRes.error && rpcRes.data) {
+          roleData = Array.isArray(rpcRes.data) ? rpcRes.data[0] : rpcRes.data;
+        }
+      } catch (e) {}
+
+      if (!roleData) {
+        const selRes = await sb.from('user_roles').select('role, display_name').eq('email', user.email).maybeSingle();
+        if (selRes.error) {
+          await sb.auth.signOut();
+          showAuthScreen('Ошибка проверки прав в user_roles: ' + selRes.error.message);
+          return;
+        }
+        roleData = selRes.data;
+      }
+
+      if (!roleData) {
         await sb.auth.signOut();
         showAuthScreen('Вашему аккаунту не предоставлен доступ к этой базе.');
         return;
       }
 
-      STATE.canEdit = roleRow.role === 'editor';
-      STATE.userName = (roleRow.display_name || '').trim() || user.email.split('@')[0];
+      APP.canEdit = roleData.role === 'editor';
+      APP.userName = (roleData.display_name || '').trim() || user.email.split('@')[0];
 
       document.getElementById('authScreen').style.display = 'none';
       document.getElementById('mainApp').style.display = 'block';
-      document.getElementById('userLabel').textContent = `${STATE.userName} (${user.email})`;
+      document.getElementById('userLabel').textContent = `${APP.userName} (${user.email})`;
 
-      applyRolePermissions();
-      await loadAllTables();
+      applyRole();
+      await loadAppState();
     }
 
     async function checkSession() {
@@ -709,480 +1049,95 @@
 
     document.getElementById('logoutBtn').addEventListener('click', async () => {
       await sb.auth.signOut();
-      STATE.user = null;
+      APP.user = null;
       showAuthScreen();
     });
-
-    async function logChange(targetLabel, oldValue, newValue) {
-      if (!STATE.canEdit || !STATE.user) return;
-      await sb.from('change_history').insert({
-        target_label: targetLabel,
-        old_value: String(oldValue ?? ''),
-        new_value: String(newValue ?? ''),
-        changed_by: STATE.userName || STATE.user.email
-      });
-    }
-
-    function isDuplicateAllowed(block, serialValue) {
-      const clean = (serialValue || '').trim().toUpperCase();
-      if (!clean || ['+', '-', 'НЕИСПР', 'Б/Н', '?'].includes(clean)) return true;
-      if (block && block.allow_duplicate_serial) return true;
-      const nameUp = (block && block.name ? block.name : '').toUpperCase();
-      return nameUp.includes('2НВ-10') || nameUp.includes('КП7-17');
-    }
-
-    function getFlagForSerial(blockId, val) {
-      const clean = (val || '').trim();
-      if (!clean) return null;
-      const lower = clean.toLowerCase();
-      if (lower === 'неиспр') return 'faulty';
-      if (clean === '?') return 'questionable';
-
-      const found = STATE.serialFlags.find(
-        f => f.serial_number.trim().toLowerCase() === lower && (!f.block_id || f.block_id === blockId)
-      );
-      return found ? found.flag_type : null;
-    }
-
-    async function loadAllTables() {
-      const [
-        sysRes, blkRes, acRes, abRes,
-        locRes, locItemRes, flagRes, commRes,
-        passRes, faultRes, histRes
-      ] = await Promise.all([
-        sb.from('systems').select('*').order('sort_order').order('id'),
-        sb.from('blocks').select('*').order('sort_order').order('id'),
-        sb.from('aircrafts').select('*').order('sort_order').order('id'),
-        sb.from('aircraft_blocks').select('*').order('slot_index').order('id'),
-        sb.from('locations').select('*').neq('name', 'ГО ПНК 2 АЭ').order('sort_order').order('id'),
-        sb.from('location_items').select('*').order('id'),
-        sb.from('serial_flags').select('*').order('id'),
-        sb.from('serial_comments').select('*').order('updated_at', { ascending: false }).limit(200),
-        sb.from('passport_blocks').select('*').order('id'),
-        sb.from('fault_logs').select('*').order('created_at', { ascending: false }).limit(200),
-        sb.from('change_history').select('*').order('changed_at', { ascending: false }).limit(200)
-      ]);
-
-      STATE.systems = sysRes.data || [];
-      STATE.blocks = blkRes.data || [];
-      STATE.aircrafts = acRes.data || [];
-      STATE.aircraftBlocks = abRes.data || [];
-      STATE.locations = (locRes.data || []).filter(l => l.name !== 'ГО ПНК 2 АЭ');
-      STATE.locationItems = locItemRes.data || [];
-      STATE.serialFlags = flagRes.data || [];
-      STATE.serialComments = commRes.data || [];
-      STATE.passportBlocks = passRes.data || [];
-      STATE.faultLogs = faultRes.data || [];
-      STATE.changeHistory = histRes.data || [];
-
-      document.getElementById('statsLabel').textContent =
-        `Бортов: ${STATE.aircrafts.length} • Блоков: ${STATE.blocks.length} • Мест: ${STATE.locations.length}`;
-
-      populateSelects();
-      renderAircraftMatrix();
-      renderLocations();
-      renderSearch();
-      renderPassports();
-      renderFaultsAndHistory();
-    }
-
-    function populateSelects() {
-      const blockOpts = STATE.blocks.map(b => {
-        const sys = STATE.systems.find(s => s.id === b.system_id);
-        return `<option value="${b.id}">${sys ? sys.name + ' — ' : ''}${b.name}</option>`;
-      }).join('');
-
-      ['locBlockSelect', 'flagBlockSelect', 'commentBlockSelect', 'passBlockSelect'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.innerHTML = blockOpts;
-      });
-
-      const faultBlk = document.getElementById('faultBlockSelect');
-      if (faultBlk) faultBlk.innerHTML = `<option value="">— Блок —</option>` + blockOpts;
-
-      const acOpts = `<option value="">— Борт —</option>` + STATE.aircrafts.map(
-        a => `<option value="${a.id}">${a.board_number}</option>`
-      ).join('');
-
-      const passAc = document.getElementById('passAircraftSelect');
-      if (passAc) passAc.innerHTML = acOpts;
-
-      const faultAc = document.getElementById('faultAircraftSelect');
-      if (faultAc) faultAc.innerHTML = acOpts;
-
-      const locSel = document.getElementById('locationSelect');
-      if (locSel) {
-        const prev = locSel.value;
-        locSel.innerHTML = STATE.locations.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
-        if (prev && STATE.locations.some(l => String(l.id) === prev)) {
-          locSel.value = prev;
-        }
-      }
-    }
-
-    function renderAircraftMatrix() {
-      const fBoard = (document.getElementById('filterBoard').value || '').trim().toLowerCase();
-      const fBlock = (document.getElementById('filterBlock').value || '').trim().toLowerCase();
-
-      const boards = STATE.aircrafts.filter(a => !fBoard || a.board_number.toLowerCase().includes(fBoard));
-
-      const counts = {};
-      STATE.aircraftBlocks.forEach(row => {
-        const clean = (row.value || '').trim().toLowerCase();
-        if (!clean || ['+', '-', 'неиспр', 'б/н', '?'].includes(clean)) return;
-        const key = `${row.block_id}::${clean}`;
-        counts[key] = (counts[key] || 0) + 1;
-      });
-
-      let html = `<thead><tr><th>Система / Блок</th>${boards.map(a => `<th>${a.board_number}</th>`).join('')}</tr></thead><tbody>`;
-
-      STATE.systems.forEach(sys => {
-        const sysBlocks = STATE.blocks.filter(b => b.system_id === sys.id);
-        const visibleBlocks = sysBlocks.filter(
-          b => !fBlock || b.name.toLowerCase().includes(fBlock) || sys.name.toLowerCase().includes(fBlock)
-        );
-        if (fBlock && !visibleBlocks.length) return;
-
-        html += `<tr class="sys-row"><td colspan="${boards.length + 1}">${sys.name}</td></tr>`;
-
-        (fBlock ? visibleBlocks : sysBlocks).forEach(blk => {
-          html += `<tr><td>${blk.name}</td>`;
-          boards.forEach(ac => {
-            const cell = STATE.aircraftBlocks.find(r => r.aircraft_id === ac.id && r.block_id === blk.id);
-            const val = cell ? (cell.value || '') : '';
-            const flag = getFlagForSerial(blk.id, val);
-            const clean = val.trim().toLowerCase();
-            const isDup = clean && !['+', '-', 'неиспр', 'б/н', '?'].includes(clean) &&
-              counts[`${blk.id}::${clean}`] > 1 && !isDuplicateAllowed(blk, val);
-
-            const cls = [flag ? `flag-${flag}` : '', isDup ? 'dup-warn' : ''].filter(Boolean).join(' ');
-
-            if (STATE.canEdit) {
-              html += `<td class="${cls}"><input type="text" class="cell-input ab-cell" value="${val.replace(/"/g, '&quot;')}" data-ac="${ac.id}" data-blk="${blk.id}" data-row="${cell ? cell.id : ''}" data-orig="${val.replace(/"/g, '&quot;')}"></td>`;
-            } else {
-              html += `<td class="${cls}">${val || '—'}</td>`;
-            }
-          });
-          html += `</tr>`;
-        });
-      });
-
-      html += `</tbody>`;
-      document.getElementById('aircraftMatrixTable').innerHTML = html;
-
-      document.querySelectorAll('.ab-cell').forEach(inp => {
-        inp.addEventListener('change', async (e) => {
-          const el = e.target;
-          const newVal = el.value.trim();
-          const oldVal = el.dataset.orig || '';
-          if (newVal === oldVal) return;
-
-          const acId = Number(el.dataset.ac);
-          const blkId = Number(el.dataset.blk);
-          const rowId = el.dataset.row ? Number(el.dataset.row) : null;
-
-          if (rowId) {
-            await sb.from('aircraft_blocks').update({
-              value: newVal,
-              updated_by: STATE.userName,
-              updated_at: new Date().toISOString()
-            }).eq('id', rowId);
-          } else if (newVal) {
-            await sb.from('aircraft_blocks').insert({
-              aircraft_id: acId,
-              block_id: blkId,
-              slot_index: 1,
-              value: newVal,
-              updated_by: STATE.userName
-            });
-          }
-
-          const acName = STATE.aircrafts.find(a => a.id === acId)?.board_number || acId;
-          const blkName = STATE.blocks.find(b => b.id === blkId)?.name || blkId;
-          await logChange(`${acName} / ${blkName}`, oldVal, newVal);
-          await loadAllTables();
-        });
-      });
-    }
-
-    function renderLocations() {
-      const locId = Number(document.getElementById('locationSelect').value);
-      const tbody = document.getElementById('locationsTable').querySelector('tbody');
-      const items = STATE.locationItems.filter(i => i.location_id === locId);
-
-      tbody.innerHTML = items.map(item => {
-        const blk = STATE.blocks.find(b => b.id === item.block_id);
-        const sys = STATE.systems.find(s => s.id === blk?.system_id);
-        const flag = getFlagForSerial(item.block_id, item.value);
-        return `
-          <tr>
-            <td>${sys ? sys.name + ' — ' : ''}${blk ? blk.name : item.block_id}</td>
-            <td class="${flag ? 'flag-' + flag : ''}">${item.value}</td>
-            <td>${item.item_note || ''}</td>
-            <td class="muted">${item.updated_by || ''}</td>
-            <td>${STATE.canEdit ? `<button type="button" class="btn-sm danger" onclick="deleteLocItem(${item.id})">Удалить</button>` : ''}</td>
-          </tr>
-        `;
-      }).join('') || `<tr><td colspan="5" class="muted">Записей нет</td></tr>`;
-    }
-
-    window.deleteLocItem = async function(id) {
-      const item = STATE.locationItems.find(x => x.id === id);
-      await sb.from('location_items').delete().eq('id', id);
-      await logChange(`Место #${item?.location_id} / ${item?.value || id}`, item?.value || '', '');
-      await loadAllTables();
-    };
-
-    function renderSearch() {
-      const q = (document.getElementById('serialSearchInput').value || '').trim().toLowerCase();
-      const rows = [];
-
-      STATE.aircraftBlocks.forEach(r => {
-        if (q && !(r.value || '').toLowerCase().includes(q)) return;
-        if (!q && !(r.value || '').trim()) return;
-        const ac = STATE.aircrafts.find(a => a.id === r.aircraft_id);
-        const blk = STATE.blocks.find(b => b.id === r.block_id);
-        const flag = getFlagForSerial(r.block_id, r.value);
-        rows.push({
-          where: `Борт ${ac?.board_number || ''}`,
-          block: blk?.name || '',
-          val: r.value,
-          flag: flag || '',
-          note: r.item_note || ''
-        });
-      });
-
-      STATE.locationItems.forEach(r => {
-        if (q && !(r.value || '').toLowerCase().includes(q)) return;
-        const loc = STATE.locations.find(l => l.id === r.location_id);
-        const blk = STATE.blocks.find(b => b.id === r.block_id);
-        const flag = getFlagForSerial(r.block_id, r.value);
-        rows.push({
-          where: loc?.name || 'Место',
-          block: blk?.name || '',
-          val: r.value,
-          flag: flag || '',
-          note: r.item_note || ''
-        });
-      });
-
-      document.getElementById('searchResultsTable').querySelector('tbody').innerHTML =
-        rows.slice(0, 150).map(row => `
-          <tr>
-            <td>${row.where}</td>
-            <td>${row.block}</td>
-            <td class="${row.flag ? 'flag-' + row.flag : ''}">${row.val}</td>
-            <td>${row.flag}</td>
-            <td>${row.note}</td>
-          </tr>
-        `).join('') || `<tr><td colspan="5" class="muted">Совпадений нет</td></tr>`;
-
-      const comms = STATE.serialComments.filter(
-        c => !q || (c.serial_number || '').toLowerCase().includes(q) || (c.comment_text || '').toLowerCase().includes(q)
-      );
-
-      document.getElementById('commentsTable').querySelector('tbody').innerHTML =
-        comms.map(c => {
-          const blk = STATE.blocks.find(b => b.id === c.block_id);
-          return `
-            <tr>
-              <td>${blk?.name || '—'}</td>
-              <td>${c.serial_number}</td>
-              <td>${c.comment_text}</td>
-              <td class="muted">${c.updated_by || ''}</td>
-              <td class="muted">${new Date(c.updated_at).toLocaleString('ru-RU')}</td>
-            </tr>
-          `;
-        }).join('') || `<tr><td colspan="5" class="muted">Комментариев нет</td></tr>`;
-    }
-
-    function renderPassports() {
-      document.getElementById('passportsTable').querySelector('tbody').innerHTML =
-        STATE.passportBlocks.map(p => {
-          const blk = STATE.blocks.find(b => b.id === p.block_id);
-          const sys = STATE.systems.find(s => s.id === blk?.system_id);
-          const ac = STATE.aircrafts.find(a => a.id === p.aircraft_id);
-          return `
-            <tr>
-              <td>${sys ? sys.name + ' — ' : ''}${blk?.name || ''}</td>
-              <td>${ac?.board_number || '—'}</td>
-              <td>${p.serial_number || ''}</td>
-              <td>${p.manufacture_date || ''}</td>
-              <td>${p.last_repair_date || ''}</td>
-              <td>${p.notes || ''}</td>
-            </tr>
-          `;
-        }).join('') || `<tr><td colspan="6" class="muted">Паспортов нет</td></tr>`;
-    }
-
-    function renderFaultsAndHistory() {
-      document.getElementById('faultsTable').querySelector('tbody').innerHTML =
-        STATE.faultLogs.map(f => {
-          const ac = STATE.aircrafts.find(a => a.id === f.aircraft_id);
-          const blk = STATE.blocks.find(b => b.id === f.block_id);
-          return `
-            <tr>
-              <td>${f.fault_date || ''}</td>
-              <td>${ac?.board_number || '—'}</td>
-              <td>${blk?.name || '—'}</td>
-              <td>${f.failed_serial || ''}</td>
-              <td>${f.symptom || ''}</td>
-              <td>${f.remedy || ''}</td>
-              <td>${f.kun || ''}</td>
-            </tr>
-          `;
-        }).join('') || `<tr><td colspan="7" class="muted">Отказов нет</td></tr>`;
-
-      document.getElementById('historyTable').querySelector('tbody').innerHTML =
-        STATE.changeHistory.map(h => `
-          <tr>
-            <td class="muted">${new Date(h.changed_at).toLocaleString('ru-RU')}</td>
-            <td>${h.changed_by}</td>
-            <td>${h.target_label}</td>
-            <td>${h.old_value}</td>
-            <td>${h.new_value}</td>
-          </tr>
-        `).join('') || `<tr><td colspan="5" class="muted">История пуста</td></tr>`;
-    }
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const tab = btn.dataset.tab;
-        document.querySelectorAll('.tab-section').forEach(sec => {
-          sec.classList.toggle('hidden', sec.id !== `sec-${tab}`);
+        document.querySelectorAll('.tab-panel').forEach(p => {
+          p.classList.toggle('hidden', p.id !== `panel-${tab}`);
         });
       });
     });
 
-    document.getElementById('filterBoard').addEventListener('input', renderAircraftMatrix);
-    document.getElementById('filterBlock').addEventListener('input', renderAircraftMatrix);
-    document.getElementById('refreshAircraftsBtn').addEventListener('click', loadAllTables);
+    document.getElementById('filterBlockInput').addEventListener('input', renderSheet1);
+    document.getElementById('filterBoardInput').addEventListener('input', renderSheet1);
+    document.getElementById('resetSheet1FilterBtn').addEventListener('click', () => {
+      document.getElementById('filterBlockInput').value = '';
+      document.getElementById('filterBoardInput').value = '';
+      renderSheet1();
+    });
+    document.getElementById('reloadDataBtn').addEventListener('click', loadAppState);
 
-    document.getElementById('addBoardBtn').addEventListener('click', async () => {
-      const num = document.getElementById('newBoardInput').value.trim();
-      if (!num) return;
-      await sb.from('aircrafts').insert({ board_number: num });
-      await logChange(`Борт ${num}`, '', num);
-      document.getElementById('newBoardInput').value = '';
-      await loadAllTables();
+    document.getElementById('addBoardCodeBtn').addEventListener('click', async () => {
+      const code = document.getElementById('newBoardCodeInput').value.trim();
+      if (!code) return;
+      if (!APP.boards.includes(code)) {
+        APP.boards.push(code);
+        APP.boardSlots[code] = 1;
+        await pushHistory(`Добавлен борт ${code}`, '', code);
+        renderSheet1();
+        renderNative();
+      }
+      document.getElementById('newBoardCodeInput').value = '';
     });
 
-    document.getElementById('locationSelect').addEventListener('change', renderLocations);
-    document.getElementById('refreshLocationsBtn').addEventListener('click', loadAllTables);
+    document.getElementById('seedFromExcelBtn').addEventListener('click', async () => {
+      await loadAppState();
+      await pushHistory('Восстановлены данные таблицы', '', 'OK');
+    });
 
-    document.getElementById('addLocItemBtn').addEventListener('click', async () => {
-      const locId = Number(document.getElementById('locationSelect').value);
-      const blkId = Number(document.getElementById('locBlockSelect').value);
-      const val = document.getElementById('locValueInput').value.trim();
-      const note = document.getElementById('locNoteInput').value.trim();
-      if (!val) return;
-      await sb.from('location_items').insert({
-        location_id: locId,
-        block_id: blkId,
-        value: val,
-        item_note: note,
-        updated_by: STATE.userName
+    document.getElementById('filterNativeInput').addEventListener('input', renderNative);
+
+    document.getElementById('addFaultRowBtn').addEventListener('click', async () => {
+      const row = {
+        date: document.getElementById('fDate').value.trim(),
+        when: document.getElementById('fWhen').value.trim(),
+        board: document.getElementById('fBoard').value.trim(),
+        system: document.getElementById('fSys').value.trim(),
+        symptom: document.getElementById('fSymptom').value.trim(),
+        remedy: document.getElementById('fRemedy').value.trim(),
+        serial: document.getElementById('fSerial').value.trim(),
+        kun: document.getElementById('fKun').value.trim()
+      };
+      if (!row.symptom && !row.serial) return;
+      APP.faults.unshift(row);
+      renderFaults();
+      await pushHistory(`Отказ ${row.board || ''} ${row.serial || ''}`, '', row.symptom);
+      ['fDate', 'fWhen', 'fBoard', 'fSys', 'fSymptom', 'fRemedy', 'fSerial', 'fKun'].forEach(id => {
+        document.getElementById(id).value = '';
       });
-      const locName = STATE.locations.find(l => l.id === locId)?.name || locId;
-      await logChange(locName, '', val);
-      document.getElementById('locValueInput').value = '';
-      document.getElementById('locNoteInput').value = '';
-      await loadAllTables();
     });
 
-    document.getElementById('serialSearchInput').addEventListener('input', renderSearch);
-    document.getElementById('clearSerialBtn').addEventListener('click', () => {
-      document.getElementById('serialSearchInput').value = '';
-      renderSearch();
+    document.getElementById('addWorkRowBtn').addEventListener('click', async () => {
+      const blk = document.getElementById('wBlockInput').value.trim();
+      const brd = document.getElementById('wBoardInput').value.trim();
+      const val = document.getElementById('wValInput').value.trim();
+      if (!blk || !val) return;
+      let existing = APP.workRows.find(r => r.block.toLowerCase() === blk.toLowerCase());
+      if (!existing) {
+        existing = { block: blk, boards: {} };
+        APP.workRows.push(existing);
+      }
+      if (brd) {
+        if (!APP.workBoards.includes(brd)) APP.workBoards.push(brd);
+        existing.boards[brd] = val;
+      }
+      renderWorks();
+      await pushHistory(`Работы: ${blk} (${brd})`, '', val);
+      document.getElementById('wBlockInput').value = '';
+      document.getElementById('wBoardInput').value = '';
+      document.getElementById('wValInput').value = '';
     });
 
-    document.getElementById('saveFlagBtn').addEventListener('click', async () => {
-      const blkId = Number(document.getElementById('flagBlockSelect').value) || null;
-      const serial = document.getElementById('flagSerialInput').value.trim();
-      const flagType = document.getElementById('flagTypeSelect').value;
-      const note = document.getElementById('flagNoteInput').value.trim();
-      if (!serial) return;
-      await sb.from('serial_flags').upsert({
-        block_id: blkId,
-        serial_number: serial,
-        flag_type: flagType,
-        note,
-        updated_by: STATE.userName,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'block_id,serial_number,flag_type' });
-      await logChange(`Пометка ${serial}`, '', flagType);
-      document.getElementById('flagSerialInput').value = '';
-      document.getElementById('flagNoteInput').value = '';
-      await loadAllTables();
-    });
-
-    document.getElementById('saveCommentBtn').addEventListener('click', async () => {
-      const blkId = Number(document.getElementById('commentBlockSelect').value) || null;
-      const serial = document.getElementById('commentSerialInput').value.trim();
-      const text = document.getElementById('commentTextInput').value.trim();
-      if (!serial || !text) return;
-      await sb.from('serial_comments').insert({
-        block_id: blkId,
-        serial_number: serial,
-        comment_text: text,
-        updated_by: STATE.userName
-      });
-      await logChange(`Комментарий ${serial}`, '', text);
-      document.getElementById('commentSerialInput').value = '';
-      document.getElementById('commentTextInput').value = '';
-      await loadAllTables();
-    });
-
-    document.getElementById('savePassportBtn').addEventListener('click', async () => {
-      const blkId = Number(document.getElementById('passBlockSelect').value);
-      const acId = document.getElementById('passAircraftSelect').value ? Number(document.getElementById('passAircraftSelect').value) : null;
-      const serial = document.getElementById('passSerialInput').value.trim();
-      const mfg = document.getElementById('passMfgInput').value.trim();
-      const rep = document.getElementById('passRepairInput').value.trim();
-      const notes = document.getElementById('passNotesInput').value.trim();
-      await sb.from('passport_blocks').insert({
-        block_id: blkId,
-        aircraft_id: acId,
-        serial_number: serial,
-        manufacture_date: mfg,
-        last_repair_date: rep,
-        notes
-      });
-      await logChange(`Паспорт ${serial || blkId}`, '', `${mfg} / ${rep}`);
-      document.getElementById('passSerialInput').value = '';
-      document.getElementById('passMfgInput').value = '';
-      document.getElementById('passRepairInput').value = '';
-      document.getElementById('passNotesInput').value = '';
-      await loadAllTables();
-    });
-
-    document.getElementById('addFaultBtn').addEventListener('click', async () => {
-      const faultDate = document.getElementById('faultDateInput').value.trim();
-      const acId = document.getElementById('faultAircraftSelect').value ? Number(document.getElementById('faultAircraftSelect').value) : null;
-      const blkId = document.getElementById('faultBlockSelect').value ? Number(document.getElementById('faultBlockSelect').value) : null;
-      const serial = document.getElementById('faultSerialInput').value.trim();
-      const symptom = document.getElementById('faultSymptomInput').value.trim();
-      const remedy = document.getElementById('faultRemedyInput').value.trim();
-      const kun = document.getElementById('faultKunInput').value.trim();
-      if (!symptom && !serial) return;
-      await sb.from('fault_logs').insert({
-        fault_date: faultDate,
-        aircraft_id: acId,
-        block_id: blkId,
-        failed_serial: serial,
-        symptom,
-        remedy,
-        kun,
-        created_by: STATE.userName
-      });
-      await logChange(`Отказ ${serial || ''}`, '', symptom);
-      document.getElementById('faultSerialInput').value = '';
-      document.getElementById('faultSymptomInput').value = '';
-      document.getElementById('faultRemedyInput').value = '';
-      document.getElementById('faultKunInput').value = '';
-      await loadAllTables();
+    document.getElementById('globalSerialInput').addEventListener('input', renderGlobalSearch);
+    document.getElementById('clearGlobalSerialBtn').addEventListener('click', () => {
+      document.getElementById('globalSerialInput').value = '';
+      renderGlobalSearch();
     });
 
     checkSession();
