@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Учёт блоков и оборудования</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #18202c;
+      --muted: #5c687a;
+      --border: #dce2ea;
+      --accent: #1d5fd6;
+      --accent-soft: #eaf1ff;
+      --danger: #c62828;
+      --danger-bg: #fdecec;
+      --warn: #9a5b00;
+      --warn-bg: #fff5e0;
+      --ok: #1b6b3a;
+      --ok-bg: #e7f6ed;
+      --info-bg: #eef3ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+    }
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .brand { font-weight: 700; font-size: 16px; }
+    .user-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; }
+    .badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .badge.viewer { background: #eef1f5; color: var(--muted); }
+    main { max-width: 1440px; margin: 0 auto; padding: 14px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    input, select, button, textarea {
+      font: inherit;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+    }
+    input[type="text"], input[type="email"], input[type="password"], select { min-height: 36px; }
+    button {
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+    button.secondary {
+      background: #fff;
+      color: var(--text);
+      border-color: var(--border);
+    }
+    button.small { padding: 5px 8px; font-size: 12px; min-height: 30px; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .tab-btn {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid #edf0f5;
+      padding: 7px 9px;
+      text-align: left;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    tr.sys-row td {
+      background: #eef3fb;
+      font-weight: 700;
+      color: #13294b;
+    }
+
+    /* Цветовые пометки серийных номеров / статусов */
+    .flag-faulty, .val-bad { background: var(--danger-bg) !important; color: var(--danger); font-weight: 600; }
+    .flag-questionable, .val-q { background: var(--warn-bg) !important; color: var(--warn); font-weight: 600; }
+    .flag-go_pnk_2ae { background: #e8e0ff !important; color: #4725a6; font-weight: 600; }
+    .flag-tech { background: var(--info-bg) !important; color: #1b4b9b; font-weight: 600; }
+    .flag-form_8 { background: var(--ok-bg) !important; color: var(--ok); font-weight: 600; }
+    .dup-warn { outline: 2px solid var(--danger); }
+
+    .muted { color: var(--muted); font-size: 12px; }
+    .status-msg { font-size: 13px; margin-top: 6px; color: var(--muted); }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Учёт блоков и оборудования</div>
+    <div class="user-bar" id="userBar">
+      <span class="muted">Не выполнено подключение</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Настройка подключения Supabase (сохраняется локально в браузере) -->
+    <section class="card" id="configCard">
+      <h3 style="margin:0 0 8px 0;">Подключение к Supabase</h3>
+      <div class="row">
+        <input type="text" id="sbUrl" placeholder="Project URL (https://xxxx.supabase.co)" style="min-width: 260px; flex:1;" />
+        <input type="text" id="sbKey" placeholder="anon public key" style="min-width: 260px; flex:1;" />
+        <button id="saveConfigBtn">Сохранить и подключить</button>
+      </div>
+      <div class="status-msg" id="configStatus"></div>
+    </section>
+
+    <!-- Вход пользователя -->
+    <section class="card hidden" id="authCard">
+      <h3 style="margin:0 0 8px 0;">Вход в систему</h3>
+      <div class="row">
+        <input type="email" id="loginEmail" placeholder="Email" />
+        <input type="password" id="loginPassword" placeholder="Пароль" />
+        <button id="loginBtn">Войти</button>
+        <button id="magicLinkBtn" class="secondary">Ссылка на почту</button>
+      </div>
+      <div class="status-msg" id="authStatus"></div>
+    </section>
+
+    <!-- Основной интерфейс -->
+    <section id="appSection" class="hidden">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="aircrafts">Состав по бортам</button>
+        <button class="tab-btn" data-tab="locations">Места и статусы</button>
+        <button class="tab-btn" data-tab="search">Поиск по зав. № и пометки</button>
+        <button class="tab-btn" data-tab="passports">Паспорта и даты</button>
+        <button class="tab-btn" data-tab="faults">Отказы и история</button>
+      </div>
+
+      <!-- 1. Состав по бортам -->
+      <div class="card tab-panel" id="tab-aircrafts">
+        <div class="row" style="margin-bottom:10px; justify-content:space-between;">
+          <div class="row">
+            <input type="text" id="filterBoard" placeholder="Фильтр по борту..." />
+            <input type="text" id="filterBlock" placeholder="Фильтр по блоку/системе..." />
+            <button id="reloadAircraftsBtn" class="secondary">Обновить</button>
+          </div>
+          <div class="row editor-only">
+            <input type="text" id="newBoardNumber" placeholder="Новый борт" style="width:130px;" />
+            <button id="addBoardBtn">+ Борт</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="aircraftMatrixTable"></table>
+        </div>
+        <div class="status-msg" id="aircraftsStatus"></div>
+      </div>
+
+      <!-- 2. Места и статусы (без ГО ПНК 2 АЭ) -->
+      <div class="card tab-panel hidden" id="tab-locations">
+        <div class="row" style="margin-bottom:10px;">
+          <select id="locationSelect"></select>
+          <button id="reloadLocationsBtn" class="secondary">Обновить</button>
+        </div>
+        <div class="row editor-only" style="margin-bottom:12px;">
+          <select id="locBlockSelect"></select>
+          <input type="text" id="locValueInput" placeholder="Зав. № или статус (неиспр, б/н, ?)" />
+          <input type="text" id="locNoteInput" placeholder="Примечание" />
+          <button id="addLocItemBtn">Добавить запись</button>
+        </div>
+        <div class="table-wrap">
+          <table id="locationsTable">
+            <thead>
+              <tr>
+                <th>Система / Блок</th>
+                <th>Значение / Зав. №</th>
+                <th>Примечание</th>
+                <th>Кто обновил</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3. Поиск по заводскому номеру, пометки и комментарии -->
+      <div class="card tab-panel hidden" id="tab-search">
+        <div class="row" style="margin-bottom:12px;">
+          <input type="text" id="serialSearchInput" placeholder="Введите заводской номер..." style="min-width:240px;" />
+          <button id="serialSearchBtn">Найти</button>
+          <button id="serialClearBtn" class="secondary">Сбросить</button>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:12px;">
+          <div class="card" style="margin:0;">
+            <h4 style="margin:0 0 8px 0;">Цветовая пометка по зав. №</h4>
+            <div class="row editor-only">
+              <select id="flagBlockSelect"></select>
+              <input type="text" id="flagSerialInput" placeholder="Зав. №" style="width:130px;" />
+              <select id="flagTypeSelect">
+                <option value="faulty">Неисправный блок</option>
+                <option value="questionable">Исправность под ?</option>
+                <option value="go_pnk_2ae">ГО ПНК 2 АЭ</option>
+                <option value="tech">ТЭЧ</option>
+                <option value="form_8">ФОРМА 8</option>
+              </select>
+              <input type="text" id="flagNoteInput" placeholder="Примечание" />
+              <button id="saveFlagBtn">Сохранить пометку</button>
+            </div>
+          </div>
+
+          <div class="card" style="margin:0;">
+            <h4 style="margin:0 0 8px 0;">Комментарий к заводскому номеру</h4>
+            <div class="row editor-only">
+              <select id="commentBlockSelect"></select>
+              <input type="text" id="commentSerialInput" placeholder="Зав. №" style="width:130px;" />
+              <input type="text" id="commentTextInput" placeholder="Текст комментария" style="flex:1;" />
+              <button id="saveCommentBtn">Добавить</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap" style="margin-bottom:12px;">
+          <table id="searchResultsTable">
+            <thead>
+              <tr>
+                <th>Где найден</th>
+                <th>Блок / Место</th>
+                <th>Значение / Зав. №</th>
+                <th>Пометка</th>
+                <th>Примечание</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="table-wrap">
+          <table id="commentsTable">
+            <thead>
+              <tr>
+                <th>Блок</th>
+                <th>Зав. №</th>
+                <th>Комментарий</th>
+                <th>Автор</th>
+                <th>Дата</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. Паспорта систем и блоков -->
+      <div class="card tab-panel hidden" id="tab-passports">
+        <div class="row editor-only" style="margin-bottom:12px;">
+          <select id="passBlockSelect"></select>
+          <select id="passAircraftSelect"><option value="">— Борт (необязательно) —</option></select>
+          <input type="text" id="passSerialInput" placeholder="Родной зав. № блока" style="width:150px;" />
+          <input type="text" id="passMfgInput" placeholder="Дата выпуска" style="width:130px;" />
+          <input type="text" id="passRepairInput" placeholder="Крайний ремонт" style="width:140px;" />
+          <input type="text" id="passNotesInput" placeholder="Примечание" />
+          <button id="savePassportBtn">Сохранить паспорт</button>
+        </div>
+        <div class="table-wrap">
+          <table id="passportsTable">
+            <thead>
+              <tr>
+                <th>Система / Блок</th>
+                <th>Борт</th>
+                <th>Зав. №</th>
+                <th>Дата выпуска</th>
+                <th>Крайний ремонт</th>
+                <th>Примечание</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 5. Журнал отказов и история изменений -->
+      <div class="card tab-panel hidden" id="tab-faults">
+        <h4 style="margin:0 0 8px 0;">Новый отказ</h4>
+        <div class="row editor-only" style="margin-bottom:12px;">
+          <input type="text" id="faultDateInput" placeholder="Дата (напр. 23.11.2026)" style="width:140px;" />
+          <select id="faultAircraftSelect"><option value="">— Борт —</option></select>
+          <select id="faultBlockSelect"><option value="">— Блок —</option></select>
+          <input type="text" id="faultSerialInput" placeholder="Зав. № отказавшего" style="width:150px;" />
+          <input type="text" id="faultSymptomInput" placeholder="Проявление отказа" style="min-width:180px;" />
+          <input type="text" id="faultRemedyInput" placeholder="Устранение" style="min-width:160px;" />
+          <input type="text" id="faultKunInput" placeholder="КУН" style="width:110px;" />
+          <button id="addFaultBtn">Записать отказ</button>
+        </div>
+
+        <div class="table-wrap" style="margin-bottom:16px;">
+          <table id="faultsTable">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Борт</th>
+                <th>Блок</th>
+                <th>Зав. №</th>
+                <th>Проявление</th>
+                <th>Устранение</th>
+                <th>КУН</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <h4 style="margin:0 0 8px 0;">История изменений</h4>
+        <div class="table-wrap">
+          <table id="historyTable">
+            <thead>
+              <tr>
+                <th>Время</th>
+                <th>Пользователь</th>
+                <th>Раздел / Объект</th>
+                <th>Было</th>
+                <th>Стало</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const LS_URL = 'https://xbyrflflvghnjksrqlau.supabase.co';
+    const LS_KEY = 'sb_publishable_I3XFt32zsrO94A1Xc9HiMg_VaBQ7IqY';
+
+    let sb = null;
+    let currentUser = null;
+    let currentRole = 'viewer';
+
+    let state = {
+      systems: [],
+      blocks: [],
+      aircrafts: [],
+      aircraftBlocks: [],
+      locations: [],
+      locationItems: [],
+      serialFlags: [],
+      serialComments: [],
+      passportBlocks: [],
+      faultLogs: [],
+      changeHistory: []
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function setStatus(elId, text) {
+      const el = $(elId);
+      if (el) el.textContent = text || '';
+    }
+
+    function applyRoleUI() {
+      const isEditor = currentRole === 'editor';
+      document.querySelectorAll('.editor-only').forEach((node) => {
+        node.classList.toggle('hidden', !isEditor);
+      });
+    }
+
+    function renderUserBar() {
+      const bar = $('userBar');
+      if (!currentUser) {
+        bar.innerHTML = `<span class="muted">Не авторизован</span>`;
+        return;
+      }
+      bar.innerHTML = `
+        <span>${currentUser.email}</span>
+        <span class="badge ${currentRole === 'editor' ? '' : 'viewer'}">${currentRole}</span>
+        <button class="small secondary" id="logoutBtn">Выйти</button>
+      `;
+      $('logoutBtn').addEventListener('click', async () => {
+        await sb.auth.signOut();
+      });
+    }
+
+    async function initSupabase(url, key) {
+      if (!url || !key) return;
+      sb = window.supabase.createClient(url, key);
+      sb.auth.onAuthStateChange(async (_event, session) => {
+        await handleSession(session);
+      });
+      const { data: { session } } = await sb.auth.getSession();
+      await handleSession(session);
+    }
+
+    async function handleSession(session) {
+      currentUser = session?.user || null;
+      if (!currentUser) {
+        currentRole = 'viewer';
+        renderUserBar();
+        $('authCard').classList.remove('hidden');
+        $('appSection').classList.add('hidden');
+        return;
+      }
+
+      const { data: roleRow, error } = await sb
+        .from('user_roles')
+        .select('role, display_name')
+        .ilike('email', currentUser.email)
+        .maybeSingle();
+
+      if (error || !roleRow) {
+        setStatus('authStatus', 'Ваш email не найден в таблице user_roles. Обратитесь к администратору.');
+        $('authCard').classList.remove('hidden');
+        $('appSection').classList.add('hidden');
+        renderUserBar();
+        return;
+      }
+
+      currentRole = roleRow.role || 'viewer';
+      renderUserBar();
+      applyRoleUI();
+      $('authCard').classList.add('hidden');
+      $('appSection').classList.remove('hidden');
+      await loadAllData();
+    }
+
+    async function logChange(tableName, targetLabel, oldValue, newValue) {
+      if (currentRole !== 'editor' || !currentUser) return;
+      await sb.from('change_history').insert({
+        table_name: tableName,
+        target_label: targetLabel,
+        old_value: String(oldValue ?? ''),
+        new_value: String(newValue ?? ''),
+        changed_by: currentUser.email
+      });
+    }
+
+    function isDuplicateAllowed(block, serialValue) {
+      const clean = (serialValue || '').trim().toUpperCase();
+      if (!clean || ['+', '-', 'НЕИСПР', 'Б/Н', '?'].includes(clean)) return true;
+      if (block?.allow_duplicate_serial) return true;
+      const nameUp = (block?.name || '').toUpperCase();
+      if (nameUp.includes('2НВ-10') || nameUp.includes('КП7-17')) return true;
+      return false;
+    }
+
+    function getFlagForSerial(blockId, val) {
+      const clean = (val || '').trim();
+      if (!clean) return null;
+      const lower = clean.toLowerCase();
+      if (lower === 'неиспр') return 'faulty';
+      if (clean === '?') return 'questionable';
+
+      const found = state.serialFlags.find(
+        (f) => f.serial_number.trim().toLowerCase() === lower && (!f.block_id || f.block_id === blockId)
+      );
+      return found ? found.flag_type : null;
+    }
+
+    async function loadAllData() {
+      const [
+        systemsRes, blocksRes, aircraftsRes, abRes,
+        locsRes, locItemsRes, flagsRes, commentsRes,
+        passRes, faultsRes, histRes
+      ] = await Promise.all([
+        sb.from('systems').select('*').order('sort_order').order('id'),
+        sb.from('blocks').select('*').order('sort_order').order('id'),
+        sb.from('aircrafts').select('*').order('sort_order').order('id'),
+        sb.from('aircraft_blocks').select('*').order('slot_index').order('id'),
+        sb.from('locations').select('*').neq('name', 'ГО ПНК 2 АЭ').order('sort_order').order('id'),
+        sb.from('location_items').select('*').order('id'),
+        sb.from('serial_flags').select('*').order('id'),
+        sb.from('serial_comments').select('*').order('updated_at', { ascending: false }).limit(200),
+        sb.from('passport_blocks').select('*').order('id'),
+        sb.from('fault_logs').select('*').order('created_at', { ascending: false }).limit(200),
+        sb.from('change_history').select('*').order('changed_at', { ascending: false }).limit(200)
+      ]);
+
+      state.systems = systemsRes.data || [];
+      state.blocks = blocksRes.data || [];
+      state.aircrafts = aircraftsRes.data || [];
+      state.aircraftBlocks = abRes.data || [];
+      state.locations = (locsRes.data || []).filter((l) => l.name !== 'ГО ПНК 2 АЭ');
+      state.locationItems = locItemsRes.data || [];
+      state.serialFlags = flagsRes.data || [];
+      state.serialComments = commentsRes.data || [];
+      state.passportBlocks = passRes.data || [];
+      state.faultLogs = faultsRes.data || [];
+      state.changeHistory = histRes.data || [];
+
+      populateSelects();
+      renderAircraftMatrix();
+      renderLocationsTab();
+      renderSearchTab();
+      renderPassportsTab();
+      renderFaultsAndHistory();
+    }
+
+    function populateSelects() {
+      const blockOptions = state.blocks.map((b) => {
+        const sys = state.systems.find((s) => s.id === b.system_id);
+        return `<option value="${b.id}">${sys ? sys.name + ' — ' : ''}${b.name}</option>`;
+      }).join('');
+
+      ['locBlockSelect', 'flagBlockSelect', 'commentBlockSelect', 'passBlockSelect'].forEach((id) => {
+        if ($(id)) $(id).innerHTML = blockOptions;
+      });
+
+      if ($('faultBlockSelect')) {
+        $('faultBlockSelect').innerHTML = `<option value="">— Блок —</option>` + blockOptions;
+      }
+
+      const acOptions = `<option value="">— Борт —</option>` + state.aircrafts.map(
+        (a) => `<option value="${a.id}">${a.board_number}</option>`
+      ).join('');
+      if ($('passAircraftSelect')) $('passAircraftSelect').innerHTML = acOptions;
+      if ($('faultAircraftSelect')) $('faultAircraftSelect').innerHTML = acOptions;
+
+      if ($('locationSelect')) {
+        const prevLoc = $('locationSelect').value;
+        $('locationSelect').innerHTML = state.locations.map(
+          (l) => `<option value="${l.id}">${l.name}</option>`
+        ).join('');
+        if (prevLoc && state.locations.some((l) => String(l.id) === prevLoc)) {
+          $('locationSelect').value = prevLoc;
+        }
+      }
+    }
+
+    function renderAircraftMatrix() {
+      const fBoard = ($('filterBoard')?.value || '').trim().toLowerCase();
+      const fBlock = ($('filterBlock')?.value || '').trim().toLowerCase();
+
+      const boards = state.aircrafts.filter((a) => !fBoard || a.board_number.toLowerCase().includes(fBoard));
+
+      // Подсчёт встречаемости серийных номеров по блоку для подсветки дублей
+      const serialCounts = {};
+      state.aircraftBlocks.forEach((row) => {
+        const clean = (row.value || '').trim().toLowerCase();
+        if (!clean || ['+', '-', 'неиспр', 'б/н', '?'].includes(clean)) return;
+        const key = `${row.block_id}::${clean}`;
+        serialCounts[key] = (serialCounts[key] || 0) + 1;
+      });
+
+      let thead = `<thead><tr><th>Система / Блок</th>${boards.map((a) => `<th>${a.board_number}</th>`).join('')}</tr></thead>`;
+      let tbody = '<tbody>';
+
+      state.systems.forEach((sys) => {
+        const sysBlocks = state.blocks.filter((b) => b.system_id === sys.id);
+        const filteredBlocks = sysBlocks.filter(
+          (b) => !fBlock || b.name.toLowerCase().includes(fBlock) || sys.name.toLowerCase().includes(fBlock)
+        );
+        if (fBlock && filteredBlocks.length === 0) return;
+
+        tbody += `<tr class="sys-row"><td colspan="${boards.length + 1}">${sys.name}</td></tr>`;
+
+        (fBlock ? filteredBlocks : sysBlocks).forEach((blk) => {
+          tbody += `<tr><td title="${blk.info_text || ''}">${blk.name}</td>`;
+          boards.forEach((ac) => {
+            const cellRows = state.aircraftBlocks.filter(
+              (r) => r.aircraft_id === ac.id && r.block_id === blk.id
+            );
+            const mainRow = cellRows[0] || { id: null, value: '', item_note: '' };
+            const val = mainRow.value || '';
+            const flag = getFlagForSerial(blk.id, val);
+            const clean = val.trim().toLowerCase();
+            const dupKey = `${blk.id}::${clean}`;
+            const isDup =
+              clean &&
+              !['+', '-', 'неиспр', 'б/н', '?'].includes(clean) &&
+              serialCounts[dupKey] > 1 &&
+              !isDuplicateAllowed(blk, val);
+
+            const cls = [
+              flag ? `flag-${flag}` : '',
+              isDup ? 'dup-warn' : ''
+            ].filter(Boolean).join(' ');
+
+            if (currentRole === 'editor') {
+              tbody += `<td class="${cls}">
+                <input type="text" value="${val.replace(/"/g, '&quot;')}"
+                  data-ac="${ac.id}" data-blk="${blk.id}" data-row-id="${mainRow.id || ''}" data-orig="${val.replace(/"/g, '&quot;')}"
+                  class="ab-input" style="width:92px; padding:4px 6px; min-height:28px;" />
+              </td>`;
+            } else {
+              tbody += `<td class="${cls}">${val || '—'}</td>`;
+            }
+          });
+          tbody += `</tr>`;
+        });
+      });
+
+      tbody += '</tbody>';
+      $('aircraftMatrixTable').innerHTML = thead + tbody;
+
+      document.querySelectorAll('.ab-input').forEach((inp) => {
+        inp.addEventListener('change', async (e) => {
+          const el = e.target;
+          const newVal = el.value.trim();
+          const oldVal = el.dataset.orig || '';
+          if (newVal === oldVal) return;
+
+          const acId = Number(el.dataset.ac);
+          const blkId = Number(el.dataset.blk);
+          const rowId = el.dataset.rowId ? Number(el.dataset.rowId) : null;
+
+          if (rowId) {
+            await sb.from('aircraft_blocks').update({
+              value: newVal,
+              updated_by: currentUser.email,
+              updated_at: new Date().toISOString()
+            }).eq('id', rowId);
+          } else if (newVal) {
+            await sb.from('aircraft_blocks').insert({
+              aircraft_id: acId,
+              block_id: blkId,
+              slot_index: 1,
+              value: newVal,
+              updated_by: currentUser.email
+            });
+          }
+
+          const acName = state.aircrafts.find((a) => a.id === acId)?.board_number || acId;
+          const blkName = state.blocks.find((b) => b.id === blkId)?.name || blkId;
+          await logChange('aircraft_blocks', `${acName} / ${blkName}`, oldVal, newVal);
+          await loadAllData();
+        });
+      });
+    }
+
+    function renderLocationsTab() {
+      const locId = Number($('locationSelect')?.value);
+      const tbody = $('locationsTable').querySelector('tbody');
+      const items = state.locationItems.filter((i) => i.location_id === locId);
+
+      tbody.innerHTML = items.map((item) => {
+        const blk = state.blocks.find((b) => b.id === item.block_id);
+        const sys = state.systems.find((s) => s.id === blk?.system_id);
+        const flag = getFlagForSerial(item.block_id, item.value);
+        return `
+          <tr>
+            <td>${sys ? sys.name + ' — ' : ''}${blk ? blk.name : item.block_id}</td>
+            <td class="${flag ? 'flag-' + flag : ''}">${item.value}</td>
+            <td>${item.item_note || ''}</td>
+            <td class="muted">${item.updated_by || ''}</td>
+            <td>
+              ${currentRole === 'editor' ? `<button class="small secondary" onclick="deleteLocItem(${item.id})">Удалить</button>` : ''}
+            </td>
+          </tr>
+        `;
+      }).join('') || `<tr><td colspan="5" class="muted">Записей нет</td></tr>`;
+    }
+
+    window.deleteLocItem = async function(id) {
+      const item = state.locationItems.find((x) => x.id === id);
+      await sb.from('location_items').delete().eq('id', id);
+      await logChange('location_items', `Место #${item?.location_id} / ${item?.value || id}`, item?.value || '', '');
+      await loadAllData();
+    };
+
+    function renderSearchTab() {
+      const q = ($('serialSearchInput')?.value || '').trim().toLowerCase();
+      const rows = [];
+
+      state.aircraftBlocks.forEach((r) => {
+        if (q && !(r.value || '').toLowerCase().includes(q)) return;
+        if (!q && !(r.value || '').trim()) return;
+        const ac = state.aircrafts.find((a) => a.id === r.aircraft_id);
+        const blk = state.blocks.find((b) => b.id === r.block_id);
+        const flag = getFlagForSerial(r.block_id, r.value);
+        rows.push({
+          where: `Борт ${ac?.board_number || ''}`,
+          block: blk?.name || '',
+          val: r.value,
+          flag: flag || '',
+          note: r.item_note || ''
+        });
+      });
+
+      state.locationItems.forEach((r) => {
+        if (q && !(r.value || '').toLowerCase().includes(q)) return;
+        const loc = state.locations.find((l) => l.id === r.location_id);
+        const blk = state.blocks.find((b) => b.id === r.block_id);
+        const flag = getFlagForSerial(r.block_id, r.value);
+        rows.push({
+          where: loc?.name || 'Место',
+          block: blk?.name || '',
+          val: r.value,
+          flag: flag || '',
+          note: r.item_note || ''
+        });
+      });
+
+      const searchBody = $('searchResultsTable').querySelector('tbody');
+      searchBody.innerHTML = rows.slice(0, 150).map((row) => `
+        <tr>
+          <td>${row.where}</td>
+          <td>${row.block}</td>
+          <td class="${row.flag ? 'flag-' + row.flag : ''}">${row.val}</td>
+          <td>${row.flag}</td>
+          <td>${row.note}</td>
+        </tr>
+      `).join('') || `<tr><td colspan="5" class="muted">Совпадений не найдено</td></tr>`;
+
+      const filteredComments = state.serialComments.filter(
+        (c) => !q || (c.serial_number || '').toLowerCase().includes(q) || (c.comment_text || '').toLowerCase().includes(q)
+      );
+      $('commentsTable').querySelector('tbody').innerHTML = filteredComments.map((c) => {
+        const blk = state.blocks.find((b) => b.id === c.block_id);
+        return `
+          <tr>
+            <td>${blk?.name || '—'}</td>
+            <td>${c.serial_number}</td>
+            <td>${c.comment_text}</td>
+            <td class="muted">${c.updated_by || ''}</td>
+            <td class="muted">${new Date(c.updated_at).toLocaleString('ru-RU')}</td>
+          </tr>
+        `;
+      }).join('') || `<tr><td colspan="5" class="muted">Комментариев нет</td></tr>`;
+    }
+
+    function renderPassportsTab() {
+      $('passportsTable').querySelector('tbody').innerHTML = state.passportBlocks.map((p) => {
+        const blk = state.blocks.find((b) => b.id === p.block_id);
+        const sys = state.systems.find((s) => s.id === blk?.system_id);
+        const ac = state.aircrafts.find((a) => a.id === p.aircraft_id);
+        return `
+          <tr>
+            <td>${sys ? sys.name + ' — ' : ''}${blk?.name || ''}</td>
+            <td>${ac?.board_number || '—'}</td>
+            <td>${p.serial_number || ''}</td>
+            <td>${p.manufacture_date || ''}</td>
+            <td>${p.last_repair_date || ''}</td>
+            <td>${p.notes || ''}</td>
+          </tr>
+        `;
+      }).join('') || `<tr><td colspan="6" class="muted">Паспортов пока нет</td></tr>`;
+    }
+
+    function renderFaultsAndHistory() {
+      $('faultsTable').querySelector('tbody').innerHTML = state.faultLogs.map((f) => {
+        const ac = state.aircrafts.find((a) => a.id === f.aircraft_id);
+        const blk = state.blocks.find((b) => b.id === f.block_id);
+        return `
+          <tr>
+            <td>${f.fault_date || ''}</td>
+            <td>${ac?.board_number || '—'}</td>
+            <td>${blk?.name || '—'}</td>
+            <td>${f.failed_serial || ''}</td>
+            <td>${f.symptom || ''}</td>
+            <td>${f.remedy || ''}</td>
+            <td>${f.kun || ''}</td>
+          </tr>
+        `;
+      }).join('') || `<tr><td colspan="7" class="muted">Записей об отказах нет</td></tr>`;
+
+      $('historyTable').querySelector('tbody').innerHTML = state.changeHistory.map((h) => `
+        <tr>
+          <td class="muted">${new Date(h.changed_at).toLocaleString('ru-RU')}</td>
+          <td>${h.changed_by}</td>
+          <td>${h.target_label}</td>
+          <td>${h.old_value}</td>
+          <td>${h.new_value}</td>
+        </tr>
+      `).join('') || `<tr><td colspan="5" class="muted">История пуста</td></tr>`;
+    }
+
+    // Обработчики событий
+    $('saveConfigBtn').addEventListener('click', async () => {
+      const url = $('sbUrl').value.trim();
+      const key = $('sbKey').value.trim();
+      localStorage.setItem(LS_URL, url);
+      localStorage.setItem(LS_KEY, key);
+      setStatus('configStatus', 'Подключаюсь...');
+      await initSupabase(url, key);
+      setStatus('configStatus', 'Параметры сохранены.');
+    });
+
+    $('loginBtn').addEventListener('click', async () => {
+      setStatus('authStatus', 'Вход...');
+      const { error } = await sb.auth.signInWithPassword({
+        email: $('loginEmail').value.trim(),
+        password: $('loginPassword').value
+      });
+      if (error) setStatus('authStatus', error.message);
+    });
+
+    $('magicLinkBtn').addEventListener('click', async () => {
+      setStatus('authStatus', 'Отправка ссылки...');
+      const { error } = await sb.auth.signInWithOtp({
+        email: $('loginEmail').value.trim()
+      });
+      setStatus('authStatus', error ? error.message : 'Ссылка отправлена на почту.');
+    });
+
+    document.querySelectorAll('.tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-panel').forEach((p) => {
+          p.classList.toggle('hidden', p.id !== `tab-${tab}`);
+        });
+      });
+    });
+
+    $('filterBoard').addEventListener('input', renderAircraftMatrix);
+    $('filterBlock').addEventListener('input', renderAircraftMatrix);
+    $('reloadAircraftsBtn').addEventListener('click', loadAllData);
+
+    $('addBoardBtn').addEventListener('click', async () => {
+      const num = $('newBoardNumber').value.trim();
+      if (!num) return;
+      await sb.from('aircrafts').insert({ board_number: num });
+      await logChange('aircrafts', `Борт ${num}`, '', num);
+      $('newBoardNumber').value = '';
+      await loadAllData();
+    });
+
+    $('locationSelect').addEventListener('change', renderLocationsTab);
+    $('reloadLocationsBtn').addEventListener('click', loadAllData);
+
+    $('addLocItemBtn').addEventListener('click', async () => {
+      const locId = Number($('locationSelect').value);
+      const blkId = Number($('locBlockSelect').value);
+      const val = $('locValueInput').value.trim();
+      const note = $('locNoteInput').value.trim();
+      if (!val) return;
+      await sb.from('location_items').insert({
+        location_id: locId,
+        block_id: blkId,
+        value: val,
+        item_note: note,
+        updated_by: currentUser.email
+      });
+      const locName = state.locations.find((l) => l.id === locId)?.name || locId;
+      await logChange('location_items', `${locName}`, '', val);
+      $('locValueInput').value = '';
+      $('locNoteInput').value = '';
+      await loadAllData();
+    });
+
+    $('serialSearchBtn').addEventListener('click', renderSearchTab);
+    $('serialSearchInput').addEventListener('input', renderSearchTab);
+    $('serialClearBtn').addEventListener('click', () => {
+      $('serialSearchInput').value = '';
+      renderSearchTab();
+    });
+
+    $('saveFlagBtn').addEventListener('click', async () => {
+      const blkId = Number($('flagBlockSelect').value) || null;
+      const serial = $('flagSerialInput').value.trim();
+      const flagType = $('flagTypeSelect').value;
+      const note = $('flagNoteInput').value.trim();
+      if (!serial) return;
+      await sb.from('serial_flags').upsert({
+        block_id: blkId,
+        serial_number: serial,
+        flag_type: flagType,
+        note,
+        updated_by: currentUser.email,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'block_id,serial_number,flag_type' });
+      await logChange('serial_flags', `Пометка ${serial}`, '', flagType);
+      $('flagSerialInput').value = '';
+      $('flagNoteInput').value = '';
+      await loadAllData();
+    });
+
+    $('saveCommentBtn').addEventListener('click', async () => {
+      const blkId = Number($('commentBlockSelect').value) || null;
+      const serial = $('commentSerialInput').value.trim();
+      const text = $('commentTextInput').value.trim();
+      if (!serial || !text) return;
+      await sb.from('serial_comments').insert({
+        block_id: blkId,
+        serial_number: serial,
+        comment_text: text,
+        updated_by: currentUser.email
+      });
+      await logChange('serial_comments', `Комментарий зав. № ${serial}`, '', text);
+      $('commentSerialInput').value = '';
+      $('commentTextInput').value = '';
+      await loadAllData();
+    });
+
+    $('savePassportBtn').addEventListener('click', async () => {
+      const blkId = Number($('passBlockSelect').value);
+      const acId = $('passAircraftSelect').value ? Number($('passAircraftSelect').value) : null;
+      const serial = $('passSerialInput').value.trim();
+      const mfg = $('passMfgInput').value.trim();
+      const rep = $('passRepairInput').value.trim();
+      const notes = $('passNotesInput').value.trim();
+      await sb.from('passport_blocks').insert({
+        block_id: blkId,
+        aircraft_id: acId,
+        serial_number: serial,
+        manufacture_date: mfg,
+        last_repair_date: rep,
+        notes
+      });
+      await logChange('passport_blocks', `Паспорт зав. № ${serial || blkId}`, '', `${mfg} / ${rep}`);
+      $('passSerialInput').value = '';
+      $('passMfgInput').value = '';
+      $('passRepairInput').value = '';
+      $('passNotesInput').value = '';
+      await loadAllData();
+    });
+
+    $('addFaultBtn').addEventListener('click', async () => {
+      const faultDate = $('faultDateInput').value.trim();
+      const acId = $('faultAircraftSelect').value ? Number($('faultAircraftSelect').value) : null;
+      const blkId = $('faultBlockSelect').value ? Number($('faultBlockSelect').value) : null;
+      const serial = $('faultSerialInput').value.trim();
+      const symptom = $('faultSymptomInput').value.trim();
+      const remedy = $('faultRemedyInput').value.trim();
+      const kun = $('faultKunInput').value.trim();
+      if (!symptom && !serial) return;
+      await sb.from('fault_logs').insert({
+        fault_date: faultDate,
+        aircraft_id: acId,
+        block_id: blkId,
+        failed_serial: serial,
+        symptom,
+        remedy,
+        kun,
+        created_by: currentUser.email
+      });
+      await logChange('fault_logs', `Отказ зав. № ${serial || ''}`, '', symptom);
+      $('faultSerialInput').value = '';
+      $('faultSymptomInput').value = '';
+      $('faultRemedyInput').value = '';
+      $('faultKunInput').value = '';
+      await loadAllData();
+    });
+
+    // Старт
+    const savedUrl = localStorage.getItem(LS_URL) || '';
+    const savedKey = localStorage.getItem(LS_KEY) || '';
+    $('sbUrl').value = savedUrl;
+    $('sbKey').value = savedKey;
+    if (savedUrl && savedKey) {
+      initSupabase(savedUrl, savedKey);
+    }
+  </script>
+</body>
+</html>
